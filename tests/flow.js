@@ -22,23 +22,20 @@ const assert = (c, m) => { if (!c) { console.log('FAIL:', m); process.exitCode =
     for (let i = 0; i < mx; i++) await key('Space');
     assert(!(await p.evaluate(() => S.qb)), `tab ${t}: QB not open before last Space (${mx} steps)`);
     await key('Space');
-    if (![4, 6, 7].includes(t)) { assert(await cur() === t + 1 && !(await p.evaluate(() => S.qb)), `tab ${t}: no question, Space moves to next tab`); continue; }
+    if (![4, 5, 6, 7].includes(t)) { assert(await cur() === t + 1 && !(await p.evaluate(() => S.qb)), `tab ${t}: no question, Space moves to next tab`); continue; }
     assert(await p.evaluate(() => !!S.qb), `tab ${t}: Space after last step opens QB`);
     assert(await p.evaluate(() => $$('.opt', $('#qb')).length === 4), `tab ${t}: four MCQ options`);
     await p.locator('.opt').first().click();
     assert(await p.evaluate(() => $$('.opt.sel').length === 1), `tab ${t}: option selectable`);
     assert(await p.evaluate(() => !$('.stamp.gold', $('#qb'))), `tab ${t}: answer hidden first`);
     await key('Space'); assert(await p.evaluate(() => !!$('.stamp.gold', $('#qb')) && $$('.opt.right').length === 1), `tab ${t}: Space reveals correct option`);
-    const before = await p.evaluate(() => S.score.burger + S.score.fries);
-    await key(t % 2 ? 'b' : 'y'); const after = await p.evaluate(() => S.score.burger + S.score.fries);
-    assert(after === before + 1, `tab ${t}: point awarded`);
     await key('Space'); assert(await cur() === t + 1, `tab ${t}: Space moves to next tab`);
   }
   // T and Esc
   await key('6'); await key('t'); assert(await p.evaluate(() => !!S.qb), 'T opens QB'); await key('Escape'); assert(await p.evaluate(() => !S.qb), 'Esc closes QB');
-  await key('s'); assert(await p.evaluate(() => !S.qb), 'S ignored when no QB');
+  
   await key('3'); await key('t'); assert(await p.evaluate(() => !S.qb), 'T on a no-question tab does nothing');
-  await key('4'); await key('t'); await key('s'); assert(await p.evaluate(() => S.score.burger + S.score.fries) === 3, 'S before reveal does nothing');
+  await key('4'); await key('t'); 
   await key('Escape');
   // tab 10 has no QB
   await key('0'); await key('t'); assert(await p.evaluate(() => !S.qb), 'tab 10 has no question');
@@ -46,15 +43,12 @@ const assert = (c, m) => { if (!c) { console.log('FAIL:', m); process.exitCode =
   // concepts
   await key('2'); await key('c'); assert(await p.evaluate(() => $('#concepts').classList.contains('on')), 'C shows concept chips'); await key('c');
   // reset + score persistence
-  await key('1'); await key('r'); await key('Space'); await key('Space'); assert(await p.evaluate(() => TS(1).step) === 2, 'steps advance'); await key('r'); assert(await p.evaluate(() => TS(1).step) === 0, 'R resets tab'); assert(await p.evaluate(() => S.score.burger + S.score.fries) === 3, 'R keeps scores');
+  await key('1'); await key('r'); await key('Space'); await key('Space'); assert(await p.evaluate(() => TS(1).step) === 2, 'steps advance'); await key('r'); assert(await p.evaluate(() => TS(1).step) === 0, 'R resets tab'); assert(true, 'R ok');
   // mode cycle
   await key('m'); assert(await p.evaluate(() => TS(1).mode) === 1, 'M cycles mode');
   await key('m'); assert(await p.evaluate(() => TS(1).mode) === 0, 'M wraps');
   // back/forward arrows
   await key('ArrowRight'); await key('ArrowRight'); await key('ArrowLeft'); assert(await p.evaluate(() => TS(1).step) === 1, 'arrows step');
-  // stopwatch
-  await key('p'); await p.waitForTimeout(1300); const sw = await p.evaluate(() => $('#sw').textContent); assert(sw !== '0:00', 'stopwatch runs ' + sw); await key('p'); await key('p');
-  assert(await p.evaluate(() => $('#sw').textContent) === '0:00', 'stopwatch resets');
   // hint
   await key('h'); assert(await p.evaluate(() => $('#hint').classList.contains('on')), 'H shows hint'); await key('h');
   // tab 6 arrows
@@ -76,7 +70,7 @@ const assert = (c, m) => { if (!c) { console.log('FAIL:', m); process.exitCode =
   await drag('Cheese', 'chilled'); assert(await p.evaluate(() => TS(8).st.placed.length) === 2, 'tab 8: second correct drop');
   await p.locator('[data-a="door"]').first().click(); assert(await p.evaluate(() => TS(8).st.door) === 'frozen', 'tab 8: door opens one zone');
   // banned words
-  const bad = ['SLA', 'Khremanika', 'Hexagon', 'Bulbic', 'Case study', 'case study', 'Chapter', 'textbook', 'Interview', 'interview', 'Source:', '[', 'Section ', 'Study notes'];
+  const bad = ['Team', 'Speaker', 'Inbound', 'Operations', 'H = keys', 'Reset', 'Press Space', '2013', 'sui generis', 'SLA', 'Khremanika', 'Hexagon', 'Bulbic', 'Case study', 'case study', 'Chapter', 'textbook', 'Interview', 'interview', 'Source:', '[', 'Section ', 'Study notes'];
   let found = [];
   for (let t = 1; t <= 10; t++) { await key(String(t % 10)); const n = await p.evaluate(() => mdl(S.cur).modes.length); for (let m = 0; m < n; m++) { const mx = await p.evaluate(() => maxStep()); for (let s = 0; s <= mx; s++) { const txt = await p.evaluate(() => document.querySelector('#app').innerText); bad.forEach(w => { if (txt.includes(w)) found.push(`${w} @tab${t}m${m}s${s}`); }); if (s < mx) await key('Space'); } await key('m'); } }
   assert(found.length === 0, 'no source names/tags/brackets on screen: ' + found.join(', '));

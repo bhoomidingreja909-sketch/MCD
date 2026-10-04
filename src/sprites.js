@@ -3,13 +3,13 @@
    rendered as crisp inline SVG. No images, no icon packs, no fonts.
    ===================================================================== */
 const PAL = {
-  K: '#2B2622', W: '#FFFFFF', C: '#E6E1D3', c: '#CFCBC0', R: '#D2403F', r: '#A82B2E', G: '#F5C518', g: '#B8860B',
+  K: '#24404F', W: '#FFFFFF', C: '#E6E1D3', c: '#CFCBC0', R: '#E8392F', r: '#B8261E', G: '#FFC629', g: '#D99A00',
   D: '#3A3A3F', d: '#55555C', S: '#8C8C8C', s: '#6F6F6F', L: '#F2F2F2', A: '#A9B858', a: '#6F8F3A', T: '#4A3A38',
   P: '#4A4A4A', B: '#7FB6EA', Q: '#5CCBB8', O: '#F0A35E', U: '#9B7FD6', N: '#4CAF50', H: '#6C8EAD',
   b: '#C98A3C', y: '#E9C27A', p: '#7A4A2A', k: '#4F2E1C', m: '#F4EFE0', f: '#F0C8A0', o: '#D9A878', w: '#CFE7F7', V: '#7F5A9F'
 };
 
-/* pix: draw a character grid. '.' is transparent. Auto 1-pixel dark outline. */
+/* pix: draw a character grid ('.' = transparent) with a soft outline. A rounding filter turns the grid into smooth, clay-like shapes. */
 function pix(rows, o = {}) {
   const pal = Object.assign({}, PAL, o.pal || {});
   const h = rows.length, w = Math.max(...rows.map(r => r.length));
@@ -34,13 +34,14 @@ function pix(rows, o = {}) {
       let j = i; while (j + 1 < pts.length && pts[j + 1][1] === pts[i][1] && pts[j + 1][0] === pts[j][0] + 1) j++;
       d += `M${pts[i][0]} ${pts[i][1]}h${j - i + 1}v1h-${j - i + 1}z`; i = j + 1;
     }
-    paths += `<path fill="${col}" d="${d}"/>`;
+    paths += `<path fill="${col}" ${col === ol ? 'fill-opacity=".5"' : ''} d="${d}"/>`;
   }
   return svgWrap(W, H, paths, o);
 }
+const SOFT = '<defs><filter id="sf" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0.42"/><feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"/></filter></defs>';
 function svgWrap(W, H, inner, o = {}) {
   const s = o.s || 4;
-  return `<svg class="spr ${o.cls || ''}" viewBox="0 0 ${W} ${H}" width="${W * s}" height="${H * s}" shape-rendering="crispEdges" style="${o.style || ''}">${inner}</svg>`;
+  return `<svg class="spr ${o.cls || ''}" viewBox="0 0 ${W} ${H}" width="${W * s}" height="${H * s}" style="${o.style || ''}">${SOFT}<g filter="url(#sf)">${inner}</g></svg>`;
 }
 /* rect helpers for buildings and vehicles */
 const col = c => PAL[c] || c;
@@ -60,10 +61,6 @@ function rs(W, H, parts, o = {}) {
   return svgWrap(W, H, inner, o);
 }
 
-const ARCH = ['..GGGGG....GGGGG..', '.GGGGGGG..GGGGGGG.', 'GGGGGGGGGGGGGGGGGG', 'GGGgg.GGGGGG.ggGGG', 'GGG....GGGG....GGG', 'GGG....GGGG....GGG', 'GGG....GGGG....GGG', 'GGg....GGgg....gGG'];
-const ARCH_S = ['.GG..GG.', 'GGGGGGGG', 'GG.GG.GG', 'GG.GG.GG'];
-const TREE = ['....aaaaaaaa....', '..aaAAAAAAAAaa..', '.aAAAAAAAAAAAAa.', 'aAAAAaAAAAAAAAAa', 'aAAAAAAAAAaAAAAa', 'aAAAaAAAAAAAAAAa', '.aAAAAAAAAaAAAa.', '..aaAAAAAAAAaa..', '....aaaaaaaa....', '......TTTT......', '......TTTT......', '......TTTT......', '.....TTTTTT.....'];
-const LAMP = ['PPPPPP', 'PLLLLP', '.PPPP.', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '..PP..', '.PPPP.', 'PPPPPP'];
 
 const GRIDS = {
   burger: ['....bbbbbbbb....', '..bbbbybbbbbbb..', '.bbybbbbbybbbbb.', '.bbbbbbbbbbbbbb.', 'AAaAAaAAaAAaAAaA', 'GGGGGGGGGGGGGGGG', 'pppppppppppppppp', 'kkkkkkkkkkkkkkkk', 'RRRRRRRRRRRRRRRR', '.bbbbbbbbbbbbbb.', '..bbbbbbbbbb..'],
@@ -89,81 +86,110 @@ const GRIDS = {
   gear: ['..SS..SS..', '.SSSSSSSS.', 'SSSS..SSSS', '.SS....SS.', '.SS....SS.', 'SSSS..SSSS', '.SSSSSSSS.', '..SS..SS..'],
   eye: ['..SSSSSS..', '.SWWWWWWS.', 'SWWUUUUWWS', 'SWWUKKUWWS', '.SWWUUWWS.', '..SSSSSS..'],
   shield: ['WWWWWWWW', 'WWWWWWWW', 'WWWWWWWW', 'WWWWWWWW', '.WWWWWW.', '..WWWW..', '...WW...'],
-  arch: ARCH, archS: ARCH_S, tree: TREE, lamp: LAMP
 };
 const SP = {};
 Object.keys(GRIDS).forEach(k => { SP[k] = (s = 4, o = {}) => pix(GRIDS[k], Object.assign({ s }, o)); });
 SP.person = (s = 4, color = '#D2403F') => pix(GRIDS.person, { s, pal: { X: color } });
 SP.shield = (s = 4, color = '#4CAF50') => pix(GRIDS.shield, { s, pal: { W: color } });
-SP.archG = (s = 4) => pix(ARCH, { s, o: PAL.g });
 
-SP.truck = (s = 4, o = {}) => rs(38, 18, [
-  bx(0, 1, 25, 12, 'W'), rc(1, 6, 23, 2, 'B'), rc(1, 8, 23, 1, 'R'), rc(2, 3, 4, 2, 'w'),
-  bx(25, 4, 12, 9, 'R'), bx(30, 5, 6, 4, 'D'), rc(26, 5, 2, 3, 'r'),
-  rc(0, 13, 37, 2, 's'),
-  bx(4, 12, 6, 6, 'D'), rc(6, 14, 2, 2, 'S'), bx(27, 12, 6, 6, 'D'), rc(29, 14, 2, 2, 'S'), rc(36, 11, 2, 2, 'G')
-], Object.assign({ s }, o));
-SP.van = (s = 4, o = {}) => rs(30, 16, [
-  bx(0, 2, 20, 11, 'W'), rc(1, 4, 6, 2, 'B'), rc(7, 4, 6, 2, 'Q'), rc(13, 4, 6, 2, 'O'),
-  bx(20, 5, 9, 8, 'R'), bx(24, 6, 4, 3, 'D'),
-  rc(0, 12, 29, 2, 's'), bx(3, 11, 5, 5, 'D'), rc(5, 13, 1, 1, 'S'), bx(21, 11, 5, 5, 'D'), rc(23, 13, 1, 1, 'S')
-], Object.assign({ s }, o));
-SP.cab = (s = 4) => rs(10, 17, [bx(0, 4, 9, 10, 'R'), bx(3, 6, 6, 4, 'D'), bx(1, 12, 6, 5, 'D'), rc(3, 14, 2, 2, 'S')], { s });
-SP.scooter = (s = 4, o = {}) => rs(30, 18, [
-  bx(0, 2, 11, 9, 'R'), rc(2, 5, 7, 3, 'G'),
-  rc(10, 11, 12, 2, 'D'), bx(16, 5, 3, 7, 'R'), rc(17, 3, 7, 2, 'P'),
-  bx(18, 0, 5, 4, 'f'), rc(19, 5, 4, 5, 'H'),
-  bx(2, 11, 7, 7, 'D'), rc(4, 13, 3, 3, 'S'), bx(20, 11, 7, 7, 'D'), rc(22, 13, 3, 3, 'S')
-], Object.assign({ s }, o));
 
-/* Strip buildings, 30 x 16 art pixels */
-SP.farm = (s = 4) => rs(30, 16, [
-  rc(0, 12, 30, 4, 'a'), rc(0, 13, 30, 1, 'A'), rc(0, 15, 30, 1, 'A'), rc(3, 11, 2, 1, 'A'), rc(7, 12, 1, 1, 'A'),
-  bx(2, 1, 15, 4, 'r'), bx(3, 4, 13, 9, 'R'), bx(8, 7, 5, 6, 'C'), rc(10, 7, 1, 6, 'c'),
-  gr(TREE.slice(0, 10), 19, 0, { ol: true }), rc(23, 10, 2, 3, 'T')
-], { s });
-SP.factory = (s = 4) => rs(30, 16, [
-  bx(1, 6, 20, 9, 'S'), bx(1, 3, 6, 4, 'S'), bx(8, 3, 6, 4, 'S'), bx(15, 3, 6, 4, 'S'),
-  rc(3, 9, 3, 3, 'w'), rc(9, 9, 3, 3, 'w'), rc(15, 9, 3, 3, 'w'), bx(21, 0, 5, 15, 's'), rc(22, 1, 1, 13, 'S'),
-  rc(23, 0, 3, 1, 'R'), rc(27, 5, 2, 2, 'L'), rc(26, 2, 3, 2, 'c'), bx(26, 10, 3, 5, 'D')
-], { s });
-SP.dc = (s = 4) => rs(30, 16, [
-  bx(1, 4, 28, 11, 'C'), bx(0, 2, 30, 4, 'R'), rc(1, 4, 28, 1, 'r'),
-  bx(3, 8, 5, 7, 's'), bx(10, 8, 5, 7, 's'), bx(17, 8, 5, 7, 's'), bx(24, 8, 4, 7, 's'),
-  rc(4, 10, 3, 1, 'S'), rc(4, 12, 3, 1, 'S'), rc(11, 10, 3, 1, 'S'), rc(11, 12, 3, 1, 'S'), rc(18, 10, 3, 1, 'S'), rc(18, 12, 3, 1, 'S'),
-  rc(13, 3, 4, 2, 'G')
-], { s });
-SP.stop = (s = 4) => rs(30, 16, [
-  rc(0, 14, 30, 2, 'c'), bx(2, 6, 17, 9, 'C'), bx(1, 4, 19, 4, 'R'), rc(2, 7, 17, 1, 'r'),
-  bx(4, 9, 6, 5, 'D'), bx(12, 9, 5, 6, 'D'), rc(14, 12, 1, 1, 'G'),
-  bx(23, 8, 4, 7, 'R'), rc(24, 9, 2, 2, 'W'), rc(25, 1, 1, 8, 'P'), bx(22, 0, 7, 4, 'G')
-], { s });
-SP.home = (s = 4) => rs(30, 16, [
-  rc(0, 14, 30, 2, 'c'), bx(3, 7, 16, 8, 'C'), bx(2, 3, 18, 5, 'H'), rc(5, 1, 12, 3, 'H'), rc(2, 7, 18, 1, 'K'),
-  bx(5, 9, 5, 4, 'D'), bx(13, 9, 4, 6, 's'), gr(GRIDS.person, 22, 4, { pal: { X: '#6C8EAD' } })
-], { s });
-/* the restaurant, copied from the reference description: cream box, red awning with golden arches */
-SP.store = (s = 4, o = {}) => rs(72, 44, [
-  gr(ARCH, 27, 0, { ol: true }),
-  bx(2, 9, 60, 7, 'C'), bx(2, 15, 60, 27, 'C'),
-  bx(0, 17, 64, 9, 'R'), rc(1, 24, 62, 2, 'r'),
-  ...Array.from({ length: 16 }, (_, i) => i % 2 ? rc(i * 4 + 1, 26, 3, 2, 'R') : rc(i * 4 + 1, 26, 3, 1, 'r')),
-  gr(ARCH_S, 6, 19, { ol: false }), gr(ARCH_S, 50, 19, { ol: false }),
-  bx(5, 30, 20, 9, 'D'), rc(7, 32, 6, 1, 'd'), rc(7, 34, 3, 1, 'd'), bx(28, 30, 8, 12, 'D'), rc(30, 32, 1, 8, 'd'), rc(34, 36, 1, 2, 'G'),
-  bx(39, 30, 20, 9, 'D'), rc(41, 32, 6, 1, 'd'),
-  rc(2, 40, 60, 2, 'R'), rc(2, 42, 60, 1, 'r'),
-  bx(65, 32, 7, 10, 'R'), gr(['.GG.', 'GGGG'], 66, 34), rc(66, 38, 5, 1, 'W'), rc(66, 40, 5, 1, 'W')
-], Object.assign({ s }, o));
-
-SP.cloud = (s = 4) => rs(20, 6, [rc(3, 3, 14, 3, 'W'), rc(6, 1, 8, 3, 'W'), rc(0, 4, 20, 2, 'L')], { s });
-SP.grass = (s = 4) => pix(['a..a.a', 'aa.aaa', 'aaaaaa'], { s, o: false });
+SP.cloud = (s = 4) => V(20, 6, s, g => '<ellipse cx="100" cy="46" rx="96" ry="14" fill="#fff" opacity=".95"/><circle cx="66" cy="34" r="22" fill="#fff"/><circle cx="108" cy="26" r="28" fill="#fff"/><circle cx="146" cy="36" r="20" fill="#fff"/>');
+SP.grass = (s = 4) => V(6, 3, s, g => '<path d="M4 30 Q8 6 14 30 Q20 0 28 30 Q34 8 40 30 Q46 4 52 30 Z" fill="#5BB353"/>');
 
 /* Pixel digit helper for the dial */
 function pixelDial(cx, cy, r, a0, a1, color, sz) {
   let out = '';
   for (let a = a0; a <= a1; a += 2) {
-    const x = Math.round((cx + Math.cos(a * Math.PI / 180) * r) / sz) * sz, y = Math.round((cy - Math.sin(a * Math.PI / 180) * r) / sz) * sz;
-    out += `<rect x="${x}" y="${y}" width="${sz}" height="${sz}" fill="${color}"/>`;
+    const x = cx + Math.cos(a * Math.PI / 180) * r, y = cy - Math.sin(a * Math.PI / 180) * r;
+    out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(sz * 0.62).toFixed(1)}" fill="${color}"/>`;
   }
   return out;
 }
+
+/* =====================================================================
+   SMOOTH ILLUSTRATIONS (bright vector style): buildings, vehicles, people.
+   These replace the grid sprites of the same name.
+   ===================================================================== */
+let _vg = 0;
+const lgr = (c1, c2) => { const id = 'vg' + (++_vg); return [id, `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`]; };
+function V(W, H, s, build, o = {}) {
+  const defs = [], g = (c1, c2) => { const [id, d] = lgr(c1, c2); defs.push(d); return `url(#${id})`; };
+  const body = build(g);
+  return `<svg class="spr ${o.cls || ''}" viewBox="0 0 ${W * 10} ${H * 10}" width="${W * s}" height="${H * s}" style="${o.style || ''}"><defs>${defs.join('')}</defs>${body}</svg>`;
+}
+const CREAM = ['#FFF8E6', '#EBDDBB'], REDG = ['#F5594C', '#C42E25'], GOLDG = ['#FFD85A', '#F2A900'], GLASS = ['#9BDCEB', '#2F86A6'], GREYG = ['#C9D6DF', '#8FA3B2'];
+const wheel = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#1F2A33"/><circle cx="${x}" cy="${y}" r="${r * 0.46}" fill="#C7D2DA"/><circle cx="${x}" cy="${y}" r="${r * 0.16}" fill="#6B7A86"/>`;
+const bunBadge = (x, y, r, g) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${g(...GOLDG)}" stroke="#D99A00" stroke-width="${r / 8}"/><path d="M${x - r * 0.55} ${y - r * 0.05} Q${x} ${y - r * 0.85} ${x + r * 0.55} ${y - r * 0.05} Z" fill="#C98A3C"/><rect x="${x - r * 0.58}" y="${y}" width="${r * 1.16}" height="${r * 0.2}" rx="${r * 0.1}" fill="#5A3320"/><rect x="${x - r * 0.52}" y="${y + r * 0.26}" width="${r * 1.04}" height="${r * 0.22}" rx="${r * 0.11}" fill="#E0A24A"/>`;
+
+SP.store = (s = 4, o = {}) => V(72, 44, s, g => `
+  <ellipse cx="330" cy="424" rx="330" ry="14" fill="rgba(20,60,80,.22)"/>
+  <rect x="40" y="96" width="520" height="64" rx="16" fill="${g(...CREAM)}"/><rect x="40" y="138" width="520" height="14" fill="#EBDDBB"/>
+  ${bunBadge(300, 58, 44, g)}
+  <rect x="40" y="150" width="520" height="244" rx="18" fill="${g(...CREAM)}"/>
+  <rect x="16" y="166" width="568" height="70" rx="18" fill="${g(...REDG)}"/><rect x="30" y="172" width="540" height="10" rx="5" fill="#FF8C7E" opacity=".6"/>
+  ${Array.from({ length: 21 }, (_, i) => `<circle cx="${34 + i * 27.5}" cy="236" r="14" fill="#C42E25"/>`).join('')}
+  ${bunBadge(84, 204, 17, g)}${bunBadge(516, 204, 17, g)}
+  <rect x="68" y="262" width="176" height="100" rx="12" fill="${g(...GLASS)}"/><path d="M84 262 L128 262 L92 362 L68 362 Z" fill="#fff" opacity=".22"/>
+  <rect x="266" y="262" width="68" height="132" rx="10" fill="#1E4A5E"/><rect x="274" y="270" width="52" height="116" rx="7" fill="${g('#7FCFE2', '#2A7C9B')}"/><rect x="316" y="320" width="5" height="26" rx="2" fill="#fff"/>
+  <rect x="356" y="262" width="176" height="100" rx="12" fill="${g(...GLASS)}"/><path d="M372 262 L416 262 L380 362 L356 362 Z" fill="#fff" opacity=".22"/>
+  <rect x="40" y="372" width="520" height="24" rx="8" fill="${g(...REDG)}"/>
+  <rect x="610" y="260" width="72" height="150" rx="12" fill="${g(...REDG)}"/><circle cx="646" cy="296" r="20" fill="${g(...GOLDG)}"/><rect x="624" y="336" width="44" height="8" rx="4" fill="#fff"/><rect x="624" y="356" width="44" height="8" rx="4" fill="#fff"/>`, { ...o, raw: 1 });
+
+SP.farm = (s = 4) => V(30, 16, s, g => `
+  <rect x="0" y="116" width="300" height="44" rx="16" fill="${g('#86D07A', '#4FA14A')}"/><path d="M6 134 Q150 118 294 134" stroke="#6CBB62" stroke-width="7" fill="none"/>
+  <path d="M16 64 L90 12 L164 64 Z" fill="#7A2E27" stroke="#7A2E27" stroke-width="10" stroke-linejoin="round"/>
+  <rect x="30" y="58" width="120" height="66" rx="6" fill="${g(...REDG)}"/><rect x="68" y="76" width="44" height="48" rx="4" fill="#FFF3DC"/><path d="M68 76 L112 124 M112 76 L68 124" stroke="#E0C9A0" stroke-width="4"/><circle cx="90" cy="42" r="9" fill="#FFF3DC"/>
+  <rect x="220" y="82" width="16" height="44" rx="6" fill="#7A4A2A"/><circle cx="228" cy="60" r="30" fill="#5DB556"/><circle cx="206" cy="78" r="20" fill="#4FA14A"/><circle cx="252" cy="76" r="22" fill="#6BC463"/><circle cx="220" cy="50" r="10" fill="#86D07A" opacity=".7"/>`);
+SP.factory = (s = 4) => V(30, 16, s, g => `
+  <rect x="0" y="126" width="300" height="34" rx="14" fill="${g('#B9C6CF', '#8FA3B2')}"/>
+  <path d="M16 70 L16 38 L66 70 L66 38 L116 70 L116 38 L166 70 L166 38 L212 70 Z" fill="#7F93A3" stroke="#7F93A3" stroke-width="8" stroke-linejoin="round"/>
+  <rect x="16" y="66" width="196" height="70" rx="8" fill="${g(...GREYG)}"/>
+  ${[0, 1, 2, 3].map(i => `<rect x="${30 + i * 44}" y="80" width="30" height="26" rx="5" fill="${g(...GLASS)}"/>`).join('')}<rect x="150" y="104" width="38" height="32" rx="5" fill="#5E7385"/>
+  <rect x="228" y="26" width="40" height="110" rx="6" fill="${g('#E8695B', '#B8352B')}"/><rect x="228" y="48" width="40" height="10" fill="#fff"/>
+  <circle cx="248" cy="18" r="13" fill="#fff" opacity=".95"/><circle cx="272" cy="8" r="9" fill="#fff" opacity=".8"/><circle cx="232" cy="6" r="8" fill="#fff" opacity=".7"/>`);
+SP.dc = (s = 4) => V(30, 16, s, g => `
+  <ellipse cx="150" cy="150" rx="146" ry="9" fill="rgba(20,60,80,.2)"/>
+  <rect x="10" y="52" width="280" height="96" rx="10" fill="${g(...CREAM)}"/><rect x="0" y="34" width="300" height="32" rx="14" fill="${g(...REDG)}"/>${bunBadge(150, 50, 15, g)}
+  ${[0, 1, 2, 3].map(i => `<rect x="${28 + i * 66}" y="82" width="52" height="66" rx="5" fill="${g('#BCC8D1', '#8493A0')}"/>${[0, 1, 2].map(k => `<rect x="${32 + i * 66}" y="${92 + k * 16}" width="44" height="4" rx="2" fill="#fff" opacity=".6"/>`).join('')}`).join('')}`);
+SP.stop = (s = 4) => V(30, 16, s, g => `
+  <rect x="0" y="136" width="300" height="24" rx="12" fill="${g('#D9D2BE', '#BDB59C')}"/>
+  <rect x="22" y="64" width="170" height="78" rx="8" fill="${g(...CREAM)}"/>
+  <rect x="12" y="36" width="190" height="32" rx="8" fill="#E8392F"/>${Array.from({ length: 5 }, (_, i) => `<rect x="${30 + i * 38}" y="36" width="19" height="32" fill="#fff"/>`).join('')}
+  <rect x="38" y="82" width="72" height="42" rx="6" fill="${g(...GLASS)}"/><rect x="128" y="82" width="42" height="60" rx="5" fill="#1E4A5E"/>
+  <rect x="226" y="82" width="38" height="60" rx="9" fill="${g(...REDG)}"/><rect x="234" y="90" width="22" height="18" rx="4" fill="#CFEFF5"/>
+  <rect x="274" y="44" width="6" height="96" rx="3" fill="#4A5560"/><rect x="254" y="14" width="46" height="32" rx="9" fill="${g(...GOLDG)}"/>`);
+SP.home = (s = 4) => V(30, 16, s, g => `
+  <rect x="0" y="138" width="300" height="22" rx="11" fill="${g('#86D07A', '#5BB353')}"/>
+  <path d="M26 76 L116 22 L206 76 Z" fill="#4F88B3" stroke="#4F88B3" stroke-width="10" stroke-linejoin="round"/>
+  <rect x="42" y="72" width="150" height="68" rx="6" fill="${g(...CREAM)}"/><rect x="100" y="94" width="34" height="46" rx="5" fill="#E8392F"/>
+  <rect x="54" y="88" width="34" height="30" rx="5" fill="${g(...GLASS)}"/><rect x="146" y="88" width="34" height="30" rx="5" fill="${g(...GLASS)}"/>
+  <circle cx="250" cy="80" r="14" fill="#F5C8A0"/><path d="M236 76 Q250 58 264 76 Z" fill="#7A4A2A"/><rect x="236" y="96" width="28" height="44" rx="13" fill="#4F88B3"/><rect x="240" y="136" width="8" height="14" rx="3" fill="#24404F"/><rect x="252" y="136" width="8" height="14" rx="3" fill="#24404F"/>`);
+SP.truck = (s = 4, o = {}) => V(38, 18, s, g => `
+  <ellipse cx="190" cy="176" rx="180" ry="6" fill="rgba(20,60,80,.22)"/>
+  <rect x="0" y="10" width="252" height="118" rx="14" fill="${g('#FFFFFF', '#D5E3EC')}"/><rect x="0" y="70" width="252" height="14" fill="#4AA8E0"/><rect x="0" y="88" width="252" height="8" fill="#E8392F"/>
+  <path d="M252 40 H318 Q338 40 348 62 L368 96 Q374 108 374 120 V128 H252 Z" fill="${g(...REDG)}"/>
+  <path d="M264 52 H312 Q324 52 332 68 L342 92 H264 Z" fill="${g('#C4EDF8', '#5FB5D4')}"/>
+  <rect x="0" y="124" width="374" height="20" rx="7" fill="#39424B"/><circle cx="368" cy="114" r="7" fill="#FFD95A"/>
+  ${wheel(64, 150, 26)}${wheel(122, 150, 26)}${wheel(306, 150, 26)}`, { ...o, raw: 1 });
+SP.van = (s = 4, o = {}) => V(30, 16, s, g => `
+  <ellipse cx="150" cy="150" rx="140" ry="6" fill="rgba(20,60,80,.22)"/>
+  <rect x="0" y="12" width="196" height="102" rx="14" fill="${g('#FFFFFF', '#D5E3EC')}"/>
+  <rect x="12" y="60" width="52" height="12" rx="6" fill="#6EC1F5"/><rect x="72" y="60" width="52" height="12" rx="6" fill="#3FD0B4"/><rect x="132" y="60" width="52" height="12" rx="6" fill="#FFA94D"/>
+  <path d="M196 44 H240 Q256 44 264 62 L284 96 Q290 106 290 116 V116 H196 Z" fill="${g(...REDG)}"/><path d="M206 54 H238 Q248 54 254 66 L262 88 H206 Z" fill="${g('#C4EDF8', '#5FB5D4')}"/>
+  <rect x="0" y="110" width="292" height="14" rx="6" fill="#39424B"/>${wheel(52, 128, 22)}${wheel(236, 128, 22)}`, { ...o, raw: 1 });
+SP.cab = (s = 4) => V(10, 17, s, g => `<path d="M6 60 H54 Q72 60 80 80 L92 108 Q96 118 96 128 V150 H6 Z" fill="${g(...REDG)}"/><path d="M16 70 H50 Q60 70 66 82 L72 100 H16 Z" fill="${g('#C4EDF8', '#5FB5D4')}"/>${wheel(52, 152, 18)}`);
+SP.scooter = (s = 4, o = {}) => V(30, 18, s, g => `
+  <rect x="6" y="20" width="108" height="86" rx="14" fill="${g(...REDG)}"/><rect x="26" y="46" width="68" height="26" rx="8" fill="${g(...GOLDG)}"/>
+  <path d="M96 106 H204 Q214 106 214 116 V122 H96 Z" fill="#39424B"/><rect x="168" y="50" width="16" height="70" rx="6" fill="${g(...REDG)}"/><rect x="170" y="38" width="46" height="10" rx="5" fill="#4A5560"/>
+  <circle cx="186" cy="22" r="16" fill="#F5C8A0"/><path d="M170 18 Q186 -2 202 18 Z" fill="#E8392F"/><rect x="172" y="40" width="26" height="46" rx="12" fill="#4F88B3"/>
+  ${wheel(46, 142, 28)}${wheel(214, 142, 28)}`, { ...o, raw: 1 });
+SP.farmer = (s = 4) => V(14, 12, s, g => `
+  <rect x="116" y="26" width="6" height="90" rx="3" fill="#7A4A2A"/><path d="M108 28 V14 M119 28 V10 M130 28 V14 M108 28 H130" stroke="#9AA7B1" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <rect x="44" y="64" width="44" height="42" rx="16" fill="${g('#5FA0D0', '#3F76A0')}"/><rect x="36" y="64" width="12" height="32" rx="6" fill="#E8392F"/><rect x="84" y="64" width="12" height="32" rx="6" fill="#E8392F"/>
+  <rect x="48" y="102" width="14" height="16" rx="5" fill="#5A3320"/><rect x="70" y="102" width="14" height="16" rx="5" fill="#5A3320"/>
+  <circle cx="66" cy="46" r="17" fill="#F5C8A0"/><ellipse cx="66" cy="34" rx="38" ry="8" fill="#E9C27A"/><path d="M42 33 Q66 6 90 33 Z" fill="#F2D68A"/><rect x="42" y="30" width="48" height="6" rx="3" fill="#E8392F"/>`);
+SP.courier = (s = 4) => V(14, 12, s, g => `
+  <rect x="44" y="64" width="46" height="38" rx="14" fill="${g(...GOLDG)}"/><rect x="48" y="98" width="14" height="20" rx="5" fill="#24404F"/><rect x="72" y="98" width="14" height="20" rx="5" fill="#24404F"/>
+  <rect x="8" y="62" width="46" height="40" rx="6" fill="#B87A3C"/><rect x="28" y="62" width="8" height="40" fill="#E8C98A"/>
+  <circle cx="68" cy="46" r="17" fill="#F5C8A0"/><path d="M48 42 Q68 16 88 42 Z" fill="${g(...REDG)}"/><rect x="62" y="38" width="36" height="7" rx="3" fill="#C42E25"/>`);
+SP.badge = (s = 4) => V(6, 6, s, g => bunBadge(30, 30, 27, g));

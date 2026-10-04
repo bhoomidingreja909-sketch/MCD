@@ -19,7 +19,7 @@ const SEGMENTS = [
     key: ['31Q', '3-month rolling forecast'] },
   { n: 5, title: 'Arrival at the DC', domain: 'Inbound', speaker: 'Speaker 5',
     def: 'The distribution centre is where inbound logistics ends and outbound logistics begins.',
-    key: ['4 national DCs (2013)', '99.8% fill rate'] },
+    key: ['Hub and spoke network', '99.8% fill rate'] },
   { n: 6, title: 'Store Ordering Mechanics', domain: 'Operations', speaker: 'Speaker 6',
     def: 'Every pull in the pull chain begins at the store: the system suggests an order, the manager decides.',
     key: ['Cut-off about 12 PM', 'Buffer: 1 to 2 days'] },
@@ -68,14 +68,14 @@ const ONE_SUPPLIER = [
 
 /* GATES (Tab 2): colour = quality-gate colour, q = the one short question, facts = small chips. */
 const GATES = [
-  { id: 'HACCP', name: 'HACCP', color: '#4CAF50', q: 'What can make food unsafe, and how do we control it?',
+  { id: 'HACCP', name: 'HACCP', color: '#3DBE62', q: 'What can make food unsafe, and how do we control it?',
     facts: ['Industry-wide', 'Applies to all suppliers'] },
-  { id: 'SQMS', name: 'SQMS', color: '#F5C518', q: 'Can this plant make it safe, legal and on-spec, every time?',
-    facts: ['A worldwide McDonald’s mandate', 'Globally trained auditors score plants'] },
-  { id: 'Sensory', name: 'Sensory', color: '#9B7FD6', q: 'Does it taste right? Minimum score to ship.',
-    facts: ['Every batch goes to an approved panel at the plant', 'Experts trained by a central lab in Hong Kong', 'Product cutting: fry, taste, score (quarterly or half-yearly)'] },
-  { id: 'DQMP', name: 'DQMP', color: '#D2403F', q: 'Does it stay safe while stored and moved?',
-    facts: ['Audits warehouses, transport and the DC'] }
+  { id: 'SQMS', name: 'SQMS', color: '#FFC629', q: 'Can this plant make it safe, legal and on-spec, every time?',
+    facts: ['A worldwide McDonald\u2019s mandate', 'Globally trained auditors score plants'] },
+  { id: 'DQMP', name: 'DQMP', color: '#E8392F', q: 'Does it stay safe while stored and moved?',
+    facts: ['Audits warehouses, transport and the distribution centre'] },
+  { id: 'Sensory', name: 'Sensory', color: '#9B7BE0', q: 'Does it taste right? Minimum score to ship.',
+    facts: ['Every batch goes to an approved panel at the plant', 'Experts trained by a central lab in Hong Kong', 'Product cutting: fry, taste, score (quarterly or half-yearly)'] }
 ];
 
 /* SCENARIOS (Tab 2, mode C) */
@@ -171,12 +171,15 @@ const CONCEPTS = {
   10: [['Role of logistics in SCM', 'Order fulfilment builds competitive advantage.']]
 };
 
-/* QUESTIONS: only segments 4, 6 and 7 have a question (all multiple choice).
+/* QUESTIONS: only segments 4, 5, 6 and 7 have a question (all multiple choice).
    q = question, opts = the answer choices, correct = position of the right choice (0 = first), a = text in the gold stamp. */
 const QUESTIONS = {
   4: { q: 'In the 31Q system, what does the \u2018Q\u2019 stand for, and how far ahead is the rolling forecast the DC gives to suppliers?',
        opts: ['Quality check, with a 3-year rolling forecast', 'Quarterly monitoring, with a 3-day rolling forecast', 'Quarterly monitoring, with a 3-month rolling forecast', 'Quantity check, with a 1-week rolling forecast'],
        correct: 2, a: 'Quarterly monitoring. The DC gives suppliers a 3-month rolling forecast.' },
+  5: { q: 'Under \u201Cdirect flow for perishables\u201D, which two items skip the distribution centre and go straight to the restaurants?',
+       opts: ['Milk and French fries', 'Buns and Coke', 'Cheese and lettuce', 'Chicken patties and onions'],
+       correct: 1, a: 'Buns and Coke skip the DC.' },
   6: { q: 'A concert near a store will raise sales, but the system cannot see it. What should the manager do, and what is the cut-off for the order?',
        opts: ['Trust the suggestion, because the system already knows about the concert', 'Override the suggestion and order more (for example 3 cases instead of 2) before the cut-off of about 12 PM', 'Wait for the concert and place a formal emergency order afterwards', 'Order fewer cases, because the projection is already high'],
        correct: 1, a: 'Override the suggestion and order more (for example 3 cases instead of 2). Cut-off: about 12 PM for the next applicable delivery.' },
@@ -184,9 +187,6 @@ const QUESTIONS = {
        opts: ['A McDonald\u2019s department that sets menu prices', 'A supplier that grows lettuce and potatoes', 'An independent logistics partner that manages all DCs and national truck movement', 'A franchisee that runs the West and South zone'],
        correct: 2, a: 'RKFL is an independent logistics partner. It manages all DCs and handles all truck movement nationally.' }
 };
-
-/* TEAMS: names shown on the scoreboard. */
-const TEAMS = { burger: 'Team Burger', fries: 'Team Fries' };
 
 /* JOURNEY (Tab 10): nine stations, one per segment. */
 const JOURNEY = [

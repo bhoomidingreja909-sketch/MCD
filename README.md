@@ -22,32 +22,30 @@ Nothing is downloaded: no internet, fonts or libraries are used, so it works wit
 | `T` | Open the Question Break now (Tab 10 has none) |
 | `Esc` | Close the Question Break or concept links |
 | `1` to `4` | Pick an answer while a question is open |
-| `B` / `Y` / `S` | Point to Team Burger / Team Fries / skip (only after the answer is shown) |
 | `C` | Show the Concept Link chips for this segment |
-| `R` | Reset this tab (scores are kept) |
+| `R` | Reset this tab (no on-screen button, key only) |
 | `F` | Fullscreen on / off |
-| `P` | Stopwatch: start, then pause, then reset |
-| `H` | Show / hide the shortcut panel (also has "Reset scores", asks to confirm) |
+| `H` | Show / hide the presenter shortcut panel (hidden from the audience by default) |
 | `↑` / `↓` | Tab 6 only: change the manager's override |
 
-**Question Break flow (Tabs 4, 6, 7):** after the last step, the next `Space` opens the multiple-choice ticket (15-second timer bar). Click an option (or press `1` to `4`), `Space` shows the answer, `B`/`Y`/`S` gives a point, `Space` again closes it and drives the truck to the next tab. The on-screen +1 buttons also work.
+**Questions (Tabs 4, 5, 6, 7):** after the last step, the next `Space` opens a multiple-choice question. Click an option (or press `1` to `4`), `Space` (or the Show answer button) reveals the correct one in green, and `Space` again (or Continue) moves to the next tab. There are no teams or points.
 
 **Mouse is needed in only a few places:** drag items in Tab 8 mode A (pack the van); click Accept / Return in Tab 9 mode B; click a gate in Tab 2 mode B. All of these also have a Space-only path.
 
 ## Presenter cheat sheet (what Space does, in order)
 
-Questions appear in **Tabs 4, 6 and 7 only** (multiple choice). In every other tab the last Space simply moves on to the next tab. Modes are switched with `M`, and each mode name is shown as a heading under the tab title.
+Questions appear in **Tabs 4, 5, 6 and 7 only** (multiple choice). In every other tab the last Space simply moves on to the next tab. Modes are switched with `M`, and each mode name is shown as a heading under the tab title.
 
 **Tab 1: Farm to Factory**
 - *A. Build the Burger Map:* 1 Buns, 2 Chicken patty, 3 Cheese, 4 Lettuce, 5 Onions, 6 Mayo, 7 Sesame (each drops a layer and pins the map) → 8 the rest of the menu pins → 9 Local pins (milk and buns). The supplier list scrolls if it gets long.
 - *B. Tiers and Suppliers:* 1 Tier-2 (farmer) → 2 Tier-1 (delivery person) → 3 ring "14 of 40" and "80%" → 4 one product, one supplier tiles → 5 "Shortage!" (sugar sachets HELD) → 6 "40 suppliers" caption.
 
-**Tab 2: Supplier Quality Gates** (clean screen: no speaker, scoreboard, stopwatch or key hints)
-- *A. The Gate Run:* 1 HACCP, 2 SQMS, 3 Sensory, 4 DQMP (the crate moves through each gate) → 5 crate reaches the distribution centre.
+**Tab 2: Supplier Quality Gates** 
+- *A. The Gate Run:* 1 HACCP, 2 SQMS, 3 DQMP, 4 Sensory (the crate moves through each gate; Sensory is last) → 5 crate reaches the distribution centre.
 - *B. Which Gate?:* for each of 3 scenarios: Space shows it (click a gate or say it aloud), Space reveals the answer (the slide changes to a green answer state with the gate banner). 6 presses in total.
 
 **Tab 3: The Outsourcing Philosophy**
-- *A. What Gets Outsourced:* 1 Transportation, 2 Warehousing, 3 Purchasing and invoicing, 4 Supplying, 5 Quality audits → 6 "100% OUTSOURCED" stamp with 40 cities / 250 restaurants → 7 who is who.
+- *A. What Gets Outsourced:* 1 Transportation, 2 Warehousing, 3 Purchasing and invoicing, 4 Supplying, 5 Quality audits → 6 "100% OUTSOURCED" stamp with 438 restaurants / 69 cities in West & South India (as of 31 March 2025) → 7 who is who.
 - *B. Handshake vs Contract:* 1 contract → 2 handshake → 3 six KPI gauges.
 - *C. Extended Enterprise:* 1 to 7 the seven nodes light up → 8 "what McDonald's keeps".
 
@@ -60,6 +58,7 @@ Questions appear in **Tabs 4, 6 and 7 only** (multiple choice). In every other t
 **Tab 5: Arrival at the DC** (first Space shows the opener line)
 - *A. Hub and Spoke Map:* 1 hubs → 2 spokes → 3 trucks drive supplier → hub → restaurant (smooth, facing their direction) → 4 bypass lines and banner.
 - *B. Four Ways to Keep Inbound Lead Time Short:* 1 to 4 flip each card → 5 fill-rate bar fills to 99.8%.
+- **MCQ (based on Mode B):** which two items skip the distribution centre? **Buns and Coke**
 
 **Tab 6: Store Ordering Mechanics** (first Space shows the opener line; the screen is a mock ordering website)
 - 1 Nightly stock count → 2 The suggestion (2 cases) → 3 The concert the system cannot see (press `↑`/`↓` to override; cut-off about 12 PM) → 4 Buffer stock → 5 Shortage drill → 6 Late truck.
@@ -79,7 +78,7 @@ Questions appear in **Tabs 4, 6 and 7 only** (multiple choice). In every other t
 - *B. Night Shift, QIP and Pyrometer:* for each box: Space = box arrives and the needle reads; then click **Accept** or **Return to DC** (or Space to take the correct call). Last Space = the checkpoint recap.
 
 **Tab 10: Kitchen to Customer** (no question)
-- 1 to 9 the order ticket visits each segment → 10 McDelivery scooter and closing line → 11 chain scorecard → 12 final team scores → 13 winner (or tie) with confetti → 14 "Thank you. Questions?"
+- 1 to 9 the order ticket visits each segment → 10 McDelivery scooter and closing line → 11 chain scorecard → 12 "Thank you. Questions?" with confetti
 
 ## Changing the content
 
@@ -88,8 +87,7 @@ Open `index.html` in any text editor, or edit the files in `src/` and run `node 
 | To change… | Edit this object |
 |---|---|
 | Speaker names and titles (the one-line definitions in `SEGMENTS` are no longer shown on screen) | `SEGMENTS` |
-| The three multiple-choice questions, options and correct answer (`correct`: 0 = first option) | `QUESTIONS` |
-| Team names | `TEAMS` |
+| The four multiple-choice questions, options and correct answer (`correct`: 0 = first option) | `QUESTIONS` |
 | Tab 1 supplier pins and map positions | `SUPPLIERS`, `LOCAL_PINS`, `ONE_SUPPLIER` |
 | Tab 2 gates and scenarios | `GATES`, `SCENARIOS` |
 | Tab 3 KPIs and outsourcing list | `KPIS`, `OUTSOURCE`, `NETWORK` |
@@ -101,8 +99,9 @@ Open `index.html` in any text editor, or edit the files in `src/` and run `node 
 
 ## Notes
 
-- Figures that describe the network in 2013 carry an "as of 2013" badge.
+- Figures that carry a date (Tab 3: 438 restaurants in 69 cities) show an "as of 31 March 2025" badge.
 - KPI gauges, the van counts and the oil-cost counter are labelled "illustrative".
 - If a tab ever fails to draw, it falls back to a clean card with the title and key numbers, and the Question Break still works.
+- The audience-facing screen has no speaker names, team scores, timers, key hints or reset buttons; all of those keys still work (see the table above).
 - Mode letters (A, B, C) are numbered automatically in the order the modes appear.
 - Developer tests (Playwright) are in `tests/`.

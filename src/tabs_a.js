@@ -18,7 +18,7 @@ const INDIA_LAND = INDIA.map((r, y) => [...r].map((ch, x) => {
   const edge = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !(INDIA[y + dy] || '')[x + dx] || (INDIA[y + dy] || '')[x + dx] === '.');
   return edge ? 'e' : ((x * 3 + y * 5) % 11 === 0 ? 'd' : '#');
 }).join(''));
-const indiaMap = (pins = '') => `<div class="mapbox" style="background:#CFE3E6;background-image:radial-gradient(#B3CED4 2px,transparent 2px);background-size:24px 24px;border:4px solid var(--ink);box-shadow:4px 4px 0 var(--ink)">
+const indiaMap = (pins = '') => `<div class="mapbox" style="background:#CFE3E6;background-image:radial-gradient(#B3CED4 2px,transparent 2px);background-size:24px 24px;border:3px solid rgba(31,52,66,.8);border-radius:10px;box-shadow:var(--sh)">
   <div class="sm" style="position:absolute;left:8px;top:300px;font-size:15px;color:#4d7a85;line-height:1.1">Arabian<br>Sea</div><div class="sm" style="position:absolute;right:8px;top:330px;font-size:15px;color:#4d7a85;line-height:1.1;text-align:right">Bay of<br>Bengal</div>
   ${pix(INDIA_LAND, { s: 12, pal: { '#': '#A9B858', e: '#8DA84A', d: '#B9C66E' } })}${pins}</div>`;
 const mapPin = (x, y, txt, cls = '') => `<div class="pin ${cls}" style="left:${(x + 1) * 12}px;top:${(y + 1) * 12}px">${txt}</div>`;
@@ -54,7 +54,7 @@ TABS[0] = {
         const fresh = (s <= 7 && i === s - 1) || (s === 8 && i >= 7);
         e.sup.forEach(p => { pins += mapPin(p[2], p[3], i + 1, fresh ? 'cur new' : ''); });
         const body = e.line ? esc(e.line) : `<b>${esc(e.ing)}:</b> ${e.sup.map(p => (p[0] ? esc(p[0]) + ' (' + esc(p[1]) + ')' : esc(p[1]))).join(', ')}`;
-        rows += `<div class="${fresh ? 'new wipe' : ''}" style="margin-bottom:4px"><span class="chip ${fresh ? 'g' : ''}" style="padding:0 7px;font-size:16px;box-shadow:2px 2px 0 var(--ink)">${i + 1}</span> ${body}</div>`;
+        rows += `<div class="${fresh ? 'new wipe' : ''}" style="margin-bottom:4px"><span class="chip ${fresh ? 'g' : ''}" style="padding:0 7px;font-size:16px;box-shadow:var(--sh)">${i + 1}</span> ${body}</div>`;
       });
       if (s >= 9) {
         LOCAL_PINS.forEach(p => { pins += mapPin(p.x, p.y, 'L', 'local new'); });
@@ -96,7 +96,6 @@ TABS[0] = {
 
 /* ---------------- TAB 2 ---------------- */
 TABS[1] = {
-  clean: true, // no speaker/team/timer/key hints on this tab
   init: () => ({ pick: [] }),
   modes: [
     { name: 'The Gate Run', max: 5, render(c) {
@@ -105,12 +104,13 @@ TABS[1] = {
       const prevX = s <= 1 ? 30 : s <= 4 ? gx(s - 2) + 63 : gx(3) + 63;
       const gates = GATES.map((g, i) => `<div class="gate" style="position:absolute;left:${gx(i)}px;top:0"><div class="gh" style="background:${g.color};color:${g.id === 'SQMS' ? '#2B2622' : '#fff'}">${SP.shield(2, '#fff')}${g.name}${s > i ? `<span class="stamp green ${s === i + 1 ? '' : 'old'}" style="font-size:15px;border-width:3px;margin-left:auto;background:#fff">PASS</span>` : ''}</div><div class="gq">${esc(g.q)}</div></div>`).join('');
       const frames = GATES.map((g, i) => `<div class="frame" style="left:${gx(i) + 48}px;border-color:${g.color}"></div>`).join('');
-      const act = s === 1 ? 'haccp' : s === 2 ? 'sqms' : s === 4 ? 'dqmp' : '';
+      const act = ['', 'haccp', 'sqms', 'dqmp', 'sens'][Math.min(s, 4)];
       const brackets = `<div style="position:relative;height:84px;margin-top:6px">
-        <div class="card ${act === 'sqms' ? 'pulse' : ''}" style="position:absolute;left:0;width:820px;top:0;height:78px;padding:2px 8px;border-color:#B8860B;background:#fbeaa0"><div class="sm">SQMS: over the plant</div>
-          <div class="card ${act === 'haccp' ? 'pulse' : ''}" style="background:#cdeccd;width:560px;padding:0 8px;font-size:17px;border-color:#2d7a31;box-shadow:none">HACCP: base layer, inside SQMS</div></div>
-        <div class="card ${act === 'dqmp' ? 'pulse' : ''}" style="position:absolute;left:836px;width:458px;top:0;height:78px;padding:2px 8px;border-color:#A82B2E;background:#f3c9c4"><div class="sm">DQMP: warehouse, transport and distribution centre</div></div></div>`;
-      const facts = s >= 1 && s <= 4 ? GATES[s - 1].facts.map(f => `<span class="chip new" style="font-size:19px;background:${GATES[s - 1].color};color:${GATES[s - 1].id === 'SQMS' ? '#2B2622' : '#fff'}">${esc(f)}</span>`).join(' ') : s === 5 ? '<span class="chip g new lg">All four gates cleared. The crate reaches the distribution centre.</span>' : '';
+        <div class="card ${act === 'sqms' ? 'pulse' : ''}" style="position:absolute;left:0;width:596px;top:0;height:78px;padding:2px 10px;border-color:#D99A00;background:#FFF0B8"><div class="sm">SQMS: over the plant</div>
+          <div class="card ${act === 'haccp' ? 'pulse' : ''}" style="background:#d4f1da;width:420px;padding:0 8px;font-size:17px;border-color:#2d9a55;box-shadow:none">HACCP: base layer, inside SQMS</div></div>
+        <div class="card ${act === 'dqmp' ? 'pulse' : ''}" style="position:absolute;left:608px;width:208px;top:0;height:78px;padding:2px 8px;border-color:#B8261E;background:#fbd3cf;font-size:16px;line-height:1.1"><b>DQMP:</b> warehouse, transport and distribution centre</div>
+        <div class="card ${act === 'sens' ? 'pulse' : ''}" style="position:absolute;left:828px;width:454px;top:0;height:78px;padding:2px 10px;border-color:#7A5CC8;background:#E6DEFA"><div class="sm"><b>Sensory:</b> a tasting panel at the plant</div></div></div>`;
+      const facts = s >= 1 && s <= 4 ? GATES[s - 1].facts.map(f => `<span class="chip new" style="font-size:19px;background:${GATES[s - 1].color};color:${GATES[s - 1].id === 'SQMS' ? '#24404F' : '#fff'}">${esc(f)}</span>`).join(' ') : s === 5 ? '<span class="chip g new lg">All four gates cleared. The crate reaches the distribution centre.</span>' : '';
       return `<div style="position:relative;height:100%">
         <div style="position:relative;height:150px">${gates}</div>
         <div class="beltwrap" style="position:relative"><div style="position:absolute;left:0;bottom:30px">${SP.factory(4)}</div><div style="position:absolute;left:1070px;bottom:30px">${SP.dc(4)}</div>${frames}
@@ -126,7 +126,7 @@ TABS[1] = {
         return `<div class="col" style="align-items:center;gap:12px">
           <div class="chip d">Scenario ${i + 1} of 3</div>
           <div class="card c new wipe" style="font:900 24px/1.25 var(--mono);padding:10px 24px;width:1100px;background:#e3f4e3;border-color:#2d7a31">${esc(sc.text)}</div>
-          <div class="new drop" style="display:flex;align-items:center;gap:24px;background:${gt.color};color:${sc.answer === 'SQMS' ? '#2B2622' : '#fff'};border:6px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:14px 40px">${SP.shield(6, '#fff')}<span class="xl">${sc.answer}</span><span class="stamp green" style="background:#fff;font-size:34px">\u2713 CORRECT GATE</span></div>
+          <div class="new drop" style="display:flex;align-items:center;gap:24px;background:${gt.color};color:${sc.answer === 'SQMS' ? '#2B2622' : '#fff'};border:3px solid rgba(31,52,66,.8);border-radius:10px;box-shadow:var(--sh);padding:14px 40px">${SP.shield(6, '#fff')}<span class="xl">${sc.answer}</span><span class="stamp green" style="background:#fff;font-size:34px">\u2713 CORRECT GATE</span></div>
           <div class="lg new">${esc(sc.why)}${pick ? ` <span class="chip ${pick === sc.answer ? 'g' : 'r'}">Your pick: ${pick} ${pick === sc.answer ? '\u2713' : '\u2717'}</span>` : ''}</div>
           <div class="row new" style="gap:10px">${['SQMS', 'HACCP', 'DQMP'].map(g => `<div class="card ${g === sc.answer ? 'gold' : 'white'} c" style="width:350px;padding:2px 8px;${g === sc.answer ? '' : 'opacity:.5'}"><b>${cmp[g]}</b><div class="sm">${g}</div></div>`).join('')}</div></div>`;
       }
@@ -153,16 +153,16 @@ TABS[2] = {
       let right = '';
       if (s < 7) {
         right = OUTSOURCE.slice(0, n).map((o, i) => `<div class="row ${i === s - 1 ? 'new left' : ''}" style="gap:8px"><span class="chip g lg" style="width:330px">${o[0]}</span><span class="mid" style="font-size:24px">→</span><span class="card white lg grow" style="padding:4px 12px">${o[1]}${o[2] ? ` <span class="sm">(${o[2]})</span>` : ''}</span></div>`).join('') || '<div class="card white lg c" style="margin-top:100px">McDonald\u2019s outsources every supply chain function to specialist partners.</div>';
-        if (s >= 6) right += `<div class="row new" style="gap:20px;margin-top:14px"><span class="stamp" style="font-size:40px">100% OUTSOURCED</span><span class="lg"><i>sui generis</i>: lean, no back-up staff, no frills</span></div>
-          <div class="row" style="gap:14px"><div class="card white res"><b>40</b><span class="sm">cities ${b13()}</span></div><div class="card white res"><b>250</b><span class="sm">restaurants ${b13()}</span></div></div>`;
+        if (s >= 6) right += `<div class="row new" style="gap:20px;margin-top:14px"><span class="stamp" style="font-size:40px">100% OUTSOURCED</span></div>
+          <div class="row" style="gap:14px"><div class="card white res"><b>438</b><span class="sm">restaurants in West &amp; South India</span></div><div class="card white res"><b>69</b><span class="sm">cities</span></div>${b25()}</div>`;
       } else {
         right = `<div class="row" style="gap:10px;flex-wrap:wrap">
-          <div class="card white new" style="width:49.4%;min-height:96px"><b>Hardcastle Restaurants</b><div class="sm">Runs West &amp; South zone under licence</div></div>
+          <div class="card white new" style="width:49.4%;min-height:96px"><b>Hardcastle Restaurants (Westlife Foodworld)</b><div class="sm">Runs West &amp; South India under licence: 438 restaurants in 69 cities ${b25()}</div></div>
           <div class="card white new" style="width:49.4%;min-height:96px"><b>Connaught Plaza</b><div class="sm">Runs North &amp; East</div></div>
           <div class="card white new" style="width:49.4%;min-height:96px"><b>HQ: Parel, Mumbai</b><div class="sm">Corporate HR, finance, back-office only</div></div>
           <div class="card red new" style="width:49.4%;min-height:96px"><b>RKFL is not part of McDonald’s</b><div class="sm">An independent logistics partner</div></div></div>
           <div class="card gold new lg c">All outlets are franchised. Hiring is done at store level.</div>
-          <div class="row" style="gap:14px;margin-top:10px"><span class="stamp" style="font-size:28px">100% OUTSOURCED</span><span class="chip">40 cities ${b13()}</span><span class="chip">250 restaurants ${b13()}</span></div>`;
+          <div class="row" style="gap:14px;margin-top:10px"><span class="stamp" style="font-size:28px">100% OUTSOURCED</span></div>`;
       }
       return `<div class="col" style="gap:8px">${right}</div>`;
     } },

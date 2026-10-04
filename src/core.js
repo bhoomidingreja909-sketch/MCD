@@ -1,16 +1,16 @@
 /* =====================================================================
-   CORE: shell, awning navigation, road + truck, question break, score,
-   keyboard, reset, stopwatch. You should not need to edit below here.
+   CORE: shell, awning navigation, road + truck, question break,
+   keyboard, reset. You should not need to edit below here.
    ===================================================================== */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const S = { cur: 0, t: {}, score: { burger: 0, fries: 0 }, qb: null, scale: 1, sw: { run: false, acc: 0, t0: 0 }, hintOn: true };
+const S = { cur: 0, t: {}, qb: null, scale: 1, hintOn: false };
 const TABS = [];
 const STOPS = [['Farm', 'farm'], ['Factory', 'factory'], ['Distribution Centre', 'dc'], ['Truck Stop', 'stop'], ['Store', 'store'], ['Customer', 'home']];
 const STOP_OF = [0, 1, 1, 2, 2, 4, 2, 3, 4, 5]; // which stop the truck visits for tabs 1..10
 const stopX = i => 110 + i * 229;
-const b13 = () => '<span class="b13">as of 2013</span>';
+const b25 = () => '<span class="b13">as of 31 March 2025</span>';
 const mdl = n => TABS[n - 1];
 const mindex = (n = S.cur) => S.t[n].mode;
 
@@ -31,18 +31,24 @@ function ctx() {
 }
 
 /* ---------- build the page ---------- */
+function palm(h, lean = 0, id = 0) {
+  const fr = [-172, -145, -118, -92, -66, -40, -14, 12, 34].map((a, i) => `<g transform="translate(${100 + lean} 70) rotate(${a})"><path d="M0 0 Q50 -42 118 -4 Q62 8 0 0Z" fill="${i % 2 ? '#2F9E55' : '#47B864'}"/><path d="M6 0 Q50 -20 108 -4" stroke="#1F7A41" stroke-width="2" fill="none" opacity=".6"/></g>`).join('');
+  const rings = Array.from({ length: 12 }, (_, i) => `<path d="M${95 + lean * (1 - i / 12) * 0.2} ${120 + i * 24} q8 6 17 0" stroke="#8A5A36" stroke-width="3" fill="none" opacity=".5"/>`).join('');
+  return `<svg class="spr" viewBox="0 0 220 420" width="${h * 0.52}" height="${h}"><defs><linearGradient id="pt${id}" x1="0" x2="1"><stop offset="0" stop-color="#B7794A"/><stop offset="1" stop-color="#8A5A36"/></linearGradient></defs><path d="M94 420 Q${90 + lean} 250 ${98 + lean} 70 L${114 + lean} 70 Q${112 + lean * 0.5} 250 118 420Z" fill="url(#pt${id})"/>${rings}${fr}<circle cx="${106 + lean}" cy="74" r="11" fill="#7A4A2A"/></svg>`;
+}
+const lampSvg = h => `<svg class="spr" viewBox="0 0 170 420" width="${h * 170 / 420}" height="${h}"><rect x="72" y="40" width="9" height="380" rx="4" fill="#3C6272"/><path d="M76 44 Q76 12 118 12 L150 12" stroke="#3C6272" stroke-width="8" fill="none" stroke-linecap="round"/><rect x="138" y="8" width="30" height="14" rx="7" fill="#3C6272"/><ellipse cx="153" cy="25" rx="11" ry="4" fill="#FFF3B0"/><rect x="62" y="396" width="29" height="24" rx="6" fill="#3C6272"/></svg>`;
+const shrub = (w, c = '#3FA65B') => `<div style="width:${w}px;height:${w * 0.45}px;background:radial-gradient(circle at 30% 30%,${c},#2A8248);border-radius:50% 50% 14px 14px"></div>`;
 function build() {
   $('#app').innerHTML = `
   <div id="open"></div>
   <div id="awning"><div id="tabs"></div></div>
   <div id="stage" class="panel"><div id="hd"></div><div id="bd"></div></div>
-  <div id="score"></div><div id="ctl"></div><div id="sw">0:00</div><div id="hintchip" data-a="hintt" style="cursor:pointer">H = keys</div>
   <div id="strip"><div class="pave"></div><div class="road"></div></div>
   <div id="concepts"></div><div id="hint" class="panel"></div><div id="qb"></div><div id="toast"></div>`;
   // awning tabs
-  let t = `<span class="sp">${SP.archS(3)}</span>`;
+  let t = `<span class="sp">${SP.badge(3)}</span>`;
   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach(n => { t += `<button class="tabsign" data-a="tab" data-v="${n}" title="${SEGMENTS[n - 1].title}">${n % 10}</button>`; });
-  t += `<span class="sp">${SP.archS(3)}</span>`;
+  t += `<span class="sp">${SP.badge(3)}</span>`;
   $('#tabs').innerHTML = t;
   // road strip
   let st = '';
@@ -51,25 +57,24 @@ function build() {
   $('#strip').insertAdjacentHTML('beforeend', st);
   // opening scene
   $('#open').innerHTML = `
-   <div style="position:absolute;left:90px;top:210px">${SP.cloud(8)}</div><div style="position:absolute;left:1120px;top:150px">${SP.cloud(7)}</div><div style="position:absolute;left:760px;top:280px">${SP.cloud(5)}</div>
-   <div class="sign panel"><h1>McDonald’s India<br>Supply Chain</h1><div class="lg" style="margin-top:6px">From farm to customer, in ten stops</div></div>
+   <div style="position:absolute;left:60px;top:190px">${SP.cloud(9)}</div><div style="position:absolute;left:1060px;top:130px">${SP.cloud(8)}</div><div style="position:absolute;left:700px;top:300px;opacity:.9">${SP.cloud(6)}</div>
+   <svg style="position:absolute;left:0;top:380px" width="1366" height="210" viewBox="0 0 1366 210"><g fill="#CDE9EC"><rect x="0" y="120" width="1366" height="90"/><rect x="250" y="80" width="140" height="130" rx="10"/><rect x="420" y="100" width="100" height="110" rx="10"/><rect x="900" y="70" width="120" height="140" rx="10"/><rect x="1060" y="96" width="160" height="114" rx="10"/><rect x="560" y="116" width="110" height="94" rx="10"/></g></svg>
+   <div class="sign panel"><h1>McDonald\u2019s India<br>Supply Chain</h1><div class="lg" style="margin-top:6px">From farm to customer, in ten stops</div></div>
    <div class="pave"></div><div class="road"></div>
-   <div style="position:absolute;left:467px;bottom:184px">${SP.store(6)}</div>
-   <div style="position:absolute;left:330px;bottom:184px">${SP.lamp(8)}</div>
-   <div style="position:absolute;left:960px;bottom:184px">${SP.tree(9)}</div>
-   <div style="position:absolute;left:150px;bottom:184px">${SP.tree(7)}</div>
-   <div style="position:absolute;left:1180px;bottom:184px">${SP.lamp(8)}</div>
-   ${[40, 250, 300, 900, 1090, 1250].map(x => `<div style="position:absolute;left:${x}px;bottom:182px">${SP.grass(6)}</div>`).join('')}
-   <div style="position:absolute;left:1000px;bottom:16px">${SP.truck(4)}</div>
-   <div class="go btn">Press Space to start</div><div style="position:absolute;left:0;right:0;bottom:8px;text-align:center"><span class="chip">1-9, 0 jump to a tab &middot; Space = next step &middot; H = all shortcuts</span></div>`;
-  $('#hint').innerHTML = `<div class="row" style="justify-content:space-between"><h3 class="mono">Keyboard</h3><button class="btn sm" data-a="hint">Hide</button></div>
+   <div style="position:absolute;left:-10px;bottom:150px">${palm(470, -6, 1)}</div><div style="position:absolute;left:120px;bottom:150px">${palm(540, 8, 2)}</div>
+   <div style="position:absolute;left:960px;bottom:160px">${palm(300, 4, 3)}</div><div style="position:absolute;left:1060px;bottom:160px">${palm(260, -4, 4)}</div>
+   <div style="position:absolute;left:330px;bottom:150px">${SP.store(7)}</div>
+   <div style="position:absolute;left:1180px;bottom:150px">${lampSvg(380)}</div>
+   <div style="position:absolute;left:290px;bottom:152px">${shrub(120)}</div><div style="position:absolute;left:770px;bottom:152px">${shrub(140, '#4CB86A')}</div><div style="position:absolute;left:1260px;bottom:152px">${shrub(110)}</div>
+   <div style="position:absolute;left:900px;bottom:8px">${SP.truck(4)}</div>
+   <div class="go btn" data-a="start">Start</div>`;
+  $('#hint').innerHTML = `<div class="row" style="justify-content:space-between"><h3 class="mono">Presenter keys</h3><button class="btn sm" data-a="hint">Hide</button></div>
    <div class="k"><kbd>1-9, 0</kbd><span>Go to tab 1 to 9, tab 10</span><kbd>PgUp / PgDn</kbd><span>Previous / next tab</span>
-   <kbd>Space / Enter</kbd><span>Main action, next step</span><kbd>← / →</kbd><span>Step back / forward</span>
-   <kbd>M</kbd><span>Next mode in this tab</span><kbd>T</kbd><span>Question Break now</span><kbd>Esc</kbd><span>Close Question Break</span>
-   <kbd>1-4</kbd><span>Pick an answer (in a question)</span><kbd>B / Y / S</kbd><span>Point Burger / Fries / Skip</span><kbd>C</kbd><span>Concept links</span><kbd>R</kbd><span>Reset this tab</span>
-   <kbd>F</kbd><span>Fullscreen</span><kbd>P</kbd><span>Stopwatch start/pause/reset</span><kbd>↑ / ↓</kbd><span>Adjust (Tab 6)</span><kbd>H</kbd><span>This panel</span></div>
-   <button class="btn red sm" data-a="scorereset" id="srbtn">Reset scores</button>`;
-  renderScore(); fit();
+   <kbd>Space / Enter</kbd><span>Next step</span><kbd>\u2190 / \u2192</kbd><span>Step back / forward</span>
+   <kbd>M</kbd><span>Next mode in this tab</span><kbd>T</kbd><span>Question now</span><kbd>Esc</kbd><span>Close question</span>
+   <kbd>1-4</kbd><span>Pick an answer</span><kbd>C</kbd><span>Concept links</span><kbd>R</kbd><span>Reset this tab</span>
+   <kbd>F</kbd><span>Fullscreen</span><kbd>\u2191 / \u2193</kbd><span>Adjust (Tab 6)</span><kbd>H</kbd><span>This panel</span></div>`;
+  fit();
 }
 function fit() {
   const s = Math.min(innerWidth / 1366, innerHeight / 768); S.scale = s;
@@ -84,7 +89,7 @@ function go(n) {
   const prev = S.cur; S.cur = n;
   if (prev === 0 && n > 0) toggleHint(false);
   const open = $('#open'); open.style.display = n === 0 ? 'block' : 'none';
-  ['#awning', '#stage', '#score', '#sw', '#hintchip', '#strip', '#ctl'].forEach(s => $(s).style.display = n === 0 ? 'none' : '');
+  ['#awning', '#stage', '#strip'].forEach(s => $(s).style.display = n === 0 ? 'none' : '');
   if (n === 0 && !S.t[0]) { /* nothing */ }
   if (n > 0) { moveTruck(STOP_OF[n - 1], prev > 0 ? STOP_OF[prev - 1] : null); render(); }
   $$('.tabsign').forEach(b => b.classList.toggle('on', +b.dataset.v === n));
@@ -103,11 +108,9 @@ function prevTab() { go(S.cur - 1); }
 function renderHead() {
   const sg = SEGMENTS[S.cur - 1], tab = mdl(S.cur), t = TS();
   const multi = tab.modes.length > 1, h = multi ? 86 : 54;
-  $('#app').classList.toggle('clean', !!tab.clean);
   $('#hd').style.height = h + 'px'; $('#bd').style.top = h + 'px';
-  $('#hd').innerHTML = `<div class="r1"><span class="num">${sg.n}</span><h1>${esc(sg.title)}</h1>${tab.clean ? '' : `<span class="tag ${sg.domain}">${sg.domain}</span><span class="spk">${esc(sg.speaker)}</span>`}</div>
+  $('#hd').innerHTML = `<div class="r1"><span class="num">${sg.n}</span><h1>${esc(sg.title)}</h1></div>
     ${multi ? `<div class="mh"><span class="chip g">Mode ${'ABC'[t.mode]}</span><span>${esc(tab.modes[t.mode].name)}</span></div>` : ''}`;
-  $('#ctl').innerHTML = `<button class="btn sm" data-a="reset">Reset</button>`;
 }
 function render() {
   if (!S.cur) return;
@@ -119,7 +122,7 @@ function render() {
     else html = modeObj().render(c);
   } catch (e) { console.warn('tab fallback', e); html = placeholder(); }
   bd.innerHTML = html;
-  bd.style.paddingBottom = '22px';
+  bd.style.paddingBottom = '14px';
   post();
 }
 function placeholder() {
@@ -162,7 +165,7 @@ function post() {
     void bd.offsetHeight;
     requestAnimationFrame(() => requestAnimationFrame(() => tw.forEach(e => {
       const [p, f, to, ms] = e.dataset.tw.split('|'); const cssp = p.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-      e.style.transition = `${cssp} ${ms || 600}ms steps(8)`; e.style[p] = to;
+      e.style.transition = `${cssp} ${ms || 600}ms cubic-bezier(.3,.7,.25,1)`; e.style[p] = to;
     })));
   }
   $$('[data-count]', bd).forEach(e => {
@@ -190,33 +193,23 @@ function confetti(cv) {
   })();
 }
 
-/* ---------- score ---------- */
-function renderScore() {
-  $('#score').innerHTML = `<div class="t b"><span>${TEAMS.burger}</span><b>${S.score.burger}</b></div><div class="t f"><span>${TEAMS.fries}</span><b>${S.score.fries}</b></div>`;
-}
-
-/* ---------- question break ---------- */
+/* ---------- question (multiple choice) ---------- */
 function openQB() {
   if (!S.cur) return; const q = QUESTIONS[S.cur];
   if (!q) return toast('No question for this segment');
   if (S.qb) return;
   closeConcepts();
-  S.qb = { n: S.cur, rev: false, aw: null, pick: null };
-  $('#qb').innerHTML = `<div class="ticket"><div class="th"><span>ORDER TICKET #${S.cur}</span><span>Question for the class</span></div>
-    <div class="tq">${esc(q.q)}</div><div class="opts" id="qo"></div><div class="ta" id="qa"></div><div class="tb" id="qbtn"></div><div class="tm"><i></i></div></div>`;
+  S.qb = { n: S.cur, rev: false, pick: null };
+  $('#qb').innerHTML = `<div class="ticket"><div class="th"><span>Question</span><span>${SEGMENTS[S.cur - 1].title}</span></div>
+    <div class="tq">${esc(q.q)}</div><div class="opts" id="qo"></div><div class="ta" id="qa"></div><div class="tb" id="qbtn"></div></div>`;
   $('#qb').classList.add('on'); updQB();
 }
 function pickOpt(i) { const q = S.qb; if (!q || q.rev || i >= QUESTIONS[q.n].opts.length) return; q.pick = i; updQB(); }
 function updQB() {
   const q = S.qb; if (!q) return; const Q = QUESTIONS[q.n];
   $('#qo').innerHTML = Q.opts.map((o, i) => `<button class="opt ${q.pick === i ? 'sel' : ''} ${q.rev && i === Q.correct ? 'right' : ''} ${q.rev && q.pick === i && i !== Q.correct ? 'wrong' : ''} ${q.rev && i !== Q.correct && q.pick !== i ? 'dim' : ''}" data-a="opt" data-v="${i}"><b>${'ABCD'[i]}</b><span>${esc(o)}</span></button>`).join('');
-  $('#qa').innerHTML = q.rev ? `<span class="stamp gold">${esc(Q.a)}</span>` : '';
-  $('#qbtn').innerHTML = !q.rev ? '' : q.aw ? `<span class="chip g lg">${q.aw === 'skip' ? 'Skipped. No point.' : '+1 for ' + (q.aw === 'burger' ? TEAMS.burger : TEAMS.fries)}</span><span class="lg" style="align-self:center">Space for next segment</span>`
-    : `<button class="btn red" data-a="award" data-v="burger">+1 ${TEAMS.burger} (B)</button><button class="btn" data-a="award" data-v="fries">+1 ${TEAMS.fries} (Y)</button><button class="btn cream" data-a="award" data-v="skip">Skip (S)</button>`;
-}
-function award(w) {
-  const q = S.qb; if (!q || !q.rev || q.aw) return;
-  q.aw = w; if (w !== 'skip') S.score[w]++; renderScore(); updQB();
+  $('#qa').innerHTML = q.rev ? `${q.pick === null ? '' : `<span class="chip ${q.pick === Q.correct ? 'g' : 'r'} lg" style="margin-right:14px">${q.pick === Q.correct ? 'Correct!' : 'Not quite'}</span>`}<span class="stamp gold">${esc(Q.a)}</span>` : '';
+  $('#qbtn').innerHTML = q.rev ? `<button class="btn" data-a="qnext">Continue</button>` : `<button class="btn" data-a="qshow">Show answer</button>`;
 }
 function closeQB(advance) {
   if (!S.qb) return; const n = S.qb.n; S.qb = null; $('#qb').classList.remove('on'); $('#qb').innerHTML = '';
@@ -224,7 +217,7 @@ function closeQB(advance) {
 }
 function qbSpace() { const q = S.qb; if (!q.rev) { q.rev = true; updQB(); } else closeQB(true); }
 
-/* ---------- concepts, hint, stopwatch ---------- */
+/* ---------- concepts, hint ---------- */
 function toggleConcepts() {
   const c = $('#concepts'); if (!S.cur) return;
   if (c.classList.contains('on')) return closeConcepts();
@@ -233,17 +226,6 @@ function toggleConcepts() {
 }
 function closeConcepts() { $('#concepts').classList.remove('on'); }
 function toggleHint(force) { S.hintOn = force === undefined ? !S.hintOn : force; $('#hint').classList.toggle('on', S.hintOn); }
-function swTick() {
-  const s = S.sw, ms = s.acc + (s.run ? performance.now() - s.t0 : 0), sec = Math.floor(ms / 1000);
-  const el = $('#sw'); el.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); el.classList.toggle('run', s.run);
-}
-function swPress() {
-  const s = S.sw;
-  if (!s.run && s.acc === 0) { s.run = true; s.t0 = performance.now(); }
-  else if (s.run) { s.acc += performance.now() - s.t0; s.run = false; }
-  else { s.acc = 0; }
-  swTick();
-}
 
 /* ---------- drag (mouse, touchpad, touch) ---------- */
 let drag = null;
@@ -266,18 +248,14 @@ document.addEventListener('click', e => {
   const a = el.dataset.a, v = el.dataset.v;
   if (a === 'tab') return go(+v);
   if (a === 'reset') return resetTab();
-  if (a === 'award') return award(v);
+  if (a === 'qshow') return qbSpace();
+  if (a === 'qnext') return closeQB(true);
+  if (a === 'start') return go(1);
   if (a === 'opt') return pickOpt(+v);
   if (a === 'hint') return toggleHint(false);
   if (a === 'hintt') return toggleHint();
-  if (a === 'scorereset') {
-    if (el.dataset.arm) { S.score = { burger: 0, fries: 0 }; renderScore(); el.textContent = 'Reset scores'; delete el.dataset.arm; toast('Scores reset'); }
-    else { el.dataset.arm = 1; el.textContent = 'Click again to confirm'; setTimeout(() => { if (el.dataset.arm) { delete el.dataset.arm; el.textContent = 'Reset scores'; } }, 3000); }
-    return;
-  }
   const m = S.cur && modeObj(); if (m && m.act) m.act(a, v, ctx());
 });
-document.addEventListener('click', e => { if (e.target.closest('#open .go')) go(1); });
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key, K = k.length === 1 ? k.toLowerCase() : k;
@@ -288,13 +266,11 @@ document.addEventListener('keydown', e => {
   if (k === 'PageUp') { stop(); return prevTab(); }
   if (K === 'f') { stop(); return document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => { }); }
   if (K === 'h') { stop(); return toggleHint(); }
-  if (K === 'p') { stop(); return swPress(); }
   if (S.cur === 0) { if (k === ' ' || k === 'Enter' || k === 'ArrowRight') { stop(); go(1); } return; }
   if (k === 'Escape') { stop(); if (S.qb) closeQB(false); else closeConcepts(); return; }
   if (S.qb) {
     if (k === ' ' || k === 'Enter' || k === 'ArrowRight') { stop(); return qbSpace(); }
     if (k === 'ArrowLeft') { stop(); return closeQB(false); }
-    if (K === 'b') return award('burger'); if (K === 'y') return award('fries'); if (K === 's') return award('skip');
     return;
   }
   if (k === ' ' || k === 'Enter' || k === 'ArrowRight') { stop(); return forward(); }
