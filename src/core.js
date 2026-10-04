@@ -36,7 +36,7 @@ function build() {
   <div id="open"></div>
   <div id="awning"><div id="tabs"></div></div>
   <div id="stage" class="panel"><div id="hd"></div><div id="bd"></div></div>
-  <div id="score"></div><div id="ctl"></div><div id="sw">0:00</div><div id="hintchip">H = keys</div>
+  <div id="score"></div><div id="ctl"></div><div id="sw">0:00</div><div id="hintchip" data-a="hintt" style="cursor:pointer">H = keys</div>
   <div id="strip"><div class="pave"></div><div class="road"></div></div>
   <div id="concepts"></div><div id="hint" class="panel"></div><div id="qb"></div><div id="toast"></div>`;
   // awning tabs
@@ -54,14 +54,14 @@ function build() {
    <div style="position:absolute;left:90px;top:210px">${SP.cloud(8)}</div><div style="position:absolute;left:1120px;top:150px">${SP.cloud(7)}</div><div style="position:absolute;left:760px;top:280px">${SP.cloud(5)}</div>
    <div class="sign panel"><h1>McDonald’s India<br>Supply Chain</h1><div class="lg" style="margin-top:6px">From farm to customer, in ten stops</div></div>
    <div class="pave"></div><div class="road"></div>
-   <div style="position:absolute;left:446px;bottom:184px">${SP.store(6)}</div>
+   <div style="position:absolute;left:467px;bottom:184px">${SP.store(6)}</div>
    <div style="position:absolute;left:330px;bottom:184px">${SP.lamp(8)}</div>
    <div style="position:absolute;left:960px;bottom:184px">${SP.tree(9)}</div>
    <div style="position:absolute;left:150px;bottom:184px">${SP.tree(7)}</div>
    <div style="position:absolute;left:1180px;bottom:184px">${SP.lamp(8)}</div>
    ${[40, 250, 300, 900, 1090, 1250].map(x => `<div style="position:absolute;left:${x}px;bottom:182px">${SP.grass(6)}</div>`).join('')}
    <div style="position:absolute;left:1000px;bottom:16px">${SP.truck(4)}</div>
-   <div class="go btn">Press Space to start</div>`;
+   <div class="go btn">Press Space to start</div><div style="position:absolute;left:0;right:0;bottom:8px;text-align:center"><span class="chip">1-9, 0 jump to a tab &middot; Space = next step &middot; H = all shortcuts</span></div>`;
   $('#hint').innerHTML = `<div class="row" style="justify-content:space-between"><h3 class="mono">Keyboard</h3><button class="btn sm" data-a="hint">Hide</button></div>
    <div class="k"><kbd>1-9, 0</kbd><span>Go to tab 1 to 9, tab 10</span><kbd>PgUp / PgDn</kbd><span>Previous / next tab</span>
    <kbd>Space / Enter</kbd><span>Main action, next step</span><kbd>← / →</kbd><span>Step back / forward</span>
@@ -265,6 +265,7 @@ document.addEventListener('click', e => {
   if (a === 'reset') return resetTab();
   if (a === 'award') return award(v);
   if (a === 'hint') return toggleHint(false);
+  if (a === 'hintt') return toggleHint();
   if (a === 'scorereset') {
     if (el.dataset.arm) { S.score = { burger: 0, fries: 0 }; renderScore(); el.textContent = 'Reset scores'; delete el.dataset.arm; toast('Scores reset'); }
     else { el.dataset.arm = 1; el.textContent = 'Click again to confirm'; setTimeout(() => { if (el.dataset.arm) { delete el.dataset.arm; el.textContent = 'Reset scores'; } }, 3000); }

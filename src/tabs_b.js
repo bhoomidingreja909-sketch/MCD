@@ -38,13 +38,13 @@ TABS[3] = {
       const n = Math.min(s, 5);
       let lines = '', spokes = '';
       SP5.forEach((t, i) => {
-        const y = 30 + i * 62; lines += i < n ? `<line x1="250" y1="170" x2="470" y2="${y + 22}" stroke="#2B2622" stroke-width="4"/>` : '';
+        const y = 12 + i * 54; lines += i < n ? `<line x1="250" y1="140" x2="470" y2="${y + 22}" stroke="#2B2622" stroke-width="4"/>` : '';
         spokes += `<div class="card ${i < n ? 'gold' : ''} ${i === s - 1 ? 'new left' : ''}" style="position:absolute;left:470px;top:${y}px;width:620px;${i < n ? '' : 'opacity:.35'}">${i + 1}. ${t}</div>`;
       });
-      const flow = s >= 6 ? `<div class="row new" style="gap:10px;margin-top:8px"><div class="card white c" style="flex:1"><b>Suppliers</b><div class="sm">on SAP</div></div><span class="mid">→</span><div class="card white c" style="flex:2"><b>DCs on RAMCO Marshall ERP with Cobra</b><div class="sm">Automates store-order upload, store scheduling and forecast orders</div></div><span class="mid">→</span><div class="card white c" style="flex:1"><b>Stores</b><div class="sm">ERP Fusion</div></div></div>` : '';
-      return `<div style="position:relative;height:${s >= 6 ? 330 : 400}px"><svg width="1294" height="340" style="position:absolute;left:0;top:0" shape-rendering="crispEdges">${lines}</svg>
-        <div class="card red c" style="position:absolute;left:30px;top:100px;width:220px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center">${SP.handshake(4)}<b class="lg">RKFL</b><span class="sm">sole distribution partner</span></div>${spokes}</div>${flow}
-        ${s >= 7 ? `<div class="chip g lg new">Same trust-based approach as with suppliers: KPIs, no legal SLA.</div>` : ''}`;
+      const flow = s >= 6 ? `<div class="row new" style="gap:10px;margin-top:6px"><div class="card white c" style="flex:1"><b>Suppliers</b><div class="sm">on SAP</div></div><span class="mid">→</span><div class="card white c" style="flex:2;padding:2px 8px"><b>DCs on RAMCO Marshall ERP with Cobra</b><div style="font-size:17px;line-height:1.1">Automates store-order upload, store scheduling and forecast orders</div></div><span class="mid">→</span><div class="card white c" style="flex:1"><b>Stores</b><div class="sm">ERP Fusion</div></div></div>` : '';
+      return `<div style="position:relative;height:${s >= 6 ? 280 : 340}px"><svg width="1294" height="300" style="position:absolute;left:0;top:0" shape-rendering="crispEdges">${lines}</svg>
+        <div class="card red c" style="position:absolute;left:30px;top:70px;width:220px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center">${SP.handshake(4)}<b class="lg">RKFL</b><span class="sm">sole distribution partner</span></div>${spokes}</div>${flow}
+        ${s >= 7 ? `<div class="chip g new" style="margin-top:8px;font-size:20px">Same trust-based approach as with suppliers: KPIs, no legal SLA.</div>` : ''}`;
     } }
   ]
 };
@@ -87,10 +87,10 @@ TABS[4] = {
     { name: 'Four Ways to Keep Inbound Lead Time Short', max: 5, render(c) {
       const s = c.step;
       const W4 = [['Pull production', 'Nothing is produced to sit in stock.', 'gear'], ['Forecast visibility', '3-month rolling forecast plus annual budgeting.', 'receipt'], ['A cap on inventory', 'Max 10 days. Turn ratio 36.', 'bin'], ['Direct flow for perishables', 'Buns and Coke skip the DC.', 'truck']];
-      const cards = W4.map((w, i) => i < s ? `<div class="card white c fcard ${i === s - 1 ? 'new' : ''}"><div>${SP[w[2]](i === 3 ? 3 : 5)}</div><div class="mid" style="font-size:26px;margin:6px 0">${i + 1}. ${w[0]}</div><div class="cap">${w[1]}</div></div>` : `<div class="card c fcard" style="opacity:.4"><div class="big" style="margin-top:50px">${i + 1}</div></div>`).join('');
+      const cards = W4.map((w, i) => i < s ? `<div class="card white c fcard ${i === s - 1 ? 'new' : ''}"><div>${SP[w[2]](i === 3 ? 2.5 : 4)}</div><div class="mid" style="font-size:22px;margin:4px 0">${i + 1}. ${w[0]}</div><div style="font-size:20px;line-height:1.15">${w[1]}</div></div>` : `<div class="card c fcard" style="opacity:.4"><div class="big" style="margin-top:40px">${i + 1}</div></div>`).join('');
       return `<div class="row" style="gap:14px;justify-content:center">${cards}</div>
-        ${s >= 5 ? `<div class="card gold mt new"><div class="lg"><b>Fill rate</b></div><div style="height:46px;background:var(--cream2);border:4px solid var(--ink);margin:6px 0"><div style="height:100%;background:var(--haccp)" data-tw="width|0%|99.8%|1200"></div></div><div class="row" style="justify-content:space-between"><span class="lg">Restaurants almost always find the product when they order.</span><span class="big" data-count="99.8|1200|1||%">99.8%</span></div></div>
-        <div class="chip mt">The DC is where inbound logistics ends and outbound begins.</div>` : ''}`;
+        ${s >= 5 ? `<div class="card gold mt new" style="padding:4px 12px"><div class="lg"><b>Fill rate</b></div><div style="height:34px;background:var(--cream2);border:4px solid var(--ink);margin:4px 0"><div style="height:100%;background:var(--haccp)" data-tw="width|0%|99.8%|1200"></div></div><div class="row" style="justify-content:space-between"><span class="lg">Restaurants almost always find the product when they order.</span><span class="mid" data-count="99.8|1200|1||%">99.8%</span></div></div>
+        <div class="chip mt" style="margin-top:8px">The DC is where inbound logistics ends and outbound begins.</div>` : ''}`;
     } }
   ]
 };
@@ -109,8 +109,8 @@ TABS[5] = {
       if (s === 0) body = `<div class="c" style="margin-top:120px"><div class="mid">Store ordering screen</div><div class="cap mt">Press Space to walk through a night in the store.</div></div>`;
       if (s === 1) body = `<div class="lg"><b>Nightly stock count</b></div><div class="col mt" style="gap:16px"><div><div class="cap">Sold stock (linked to sales)</div>${hbar(72, '#D2403F', '')}</div><div><div class="cap">Available stock</div>${hbar(45, '#4CAF50', '')}</div></div>
         <div class="card gold lg mt c">The system works from actual sold stock, not manually typed forecasts.</div>`;
-      if (s === 2) body = `<div class="row" style="gap:30px;align-items:flex-end;justify-content:center;height:230px"><div class="c"><div class="lg">${SC.fridayThis} lakh</div><div style="width:110px;height:${SC.fridayThis * 34}px;background:var(--red);border:4px solid var(--ink)" data-tw="height|0px|${SC.fridayThis * 34}px|600"></div><div class="cap">This Friday</div></div>
-        <div class="c"><div class="lg">${SC.fridayLast} lakh</div><div style="width:110px;height:${SC.fridayLast * 34}px;background:var(--leaf);border:4px solid var(--ink)" data-tw="height|0px|${SC.fridayLast * 34}px|600"></div><div class="cap">Last Friday</div></div>
+      if (s === 2) body = `<div class="row" style="gap:30px;align-items:flex-end;justify-content:center;height:262px;margin-bottom:6px"><div class="c"><div class="lg">\u20B9${SC.fridayThis} lakh</div><div style="width:110px;height:${SC.fridayThis * 34}px;background:var(--red);border:4px solid var(--ink)" data-tw="height|0px|${SC.fridayThis * 34}px|600"></div><div class="cap">This Friday</div></div>
+        <div class="c"><div class="lg">\u20B9${SC.fridayLast} lakh</div><div style="width:110px;height:${SC.fridayLast * 34}px;background:var(--leaf);border:4px solid var(--ink)" data-tw="height|0px|${SC.fridayLast * 34}px|600"></div><div class="cap">Last Friday</div></div>
         <div class="card white c" style="width:420px"><div class="sm">Projected sales</div><div class="big red-t">${SC.sales}</div><div class="mt">→ Suggested order</div><div class="big">${SC.suggested} cases</div></div></div>
         <div class="card gold lg c">It suggests. It does not decide. Ordering unit: cases.</div>`;
       if (s === 3) {

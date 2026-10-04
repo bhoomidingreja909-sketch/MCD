@@ -191,7 +191,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mover{position:absolute;left:0;top:0;offset-rotate:0deg;animation:mv 3.2s steps(32) infinite}
 @keyframes mv{from{offset-distance:0%}to{offset-distance:100%}}
 .flip{perspective:600px}
-.fcard{padding:10px;text-align:center;min-height:170px;width:300px}
+.fcard{padding:6px 8px;text-align:center;min-height:150px;width:300px}
 .shelf{flex:1;padding:8px}
 .glowitem{animation:pulse .8s steps(2) infinite;background:var(--gold)!important}
 .conf{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%}
