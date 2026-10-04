@@ -3,7 +3,7 @@
    Each block below is one "config object". Keep the quotes and commas.
    ===================================================================== */
 
-/* SEGMENTS: one entry per tab. Change speaker names here. */
+/* SEGMENTS: one entry per tab. Change speaker names here. (def is kept for reference but is no longer shown on screen.) */
 const SEGMENTS = [
   { n: 1, title: 'Farm to Factory', domain: 'Inbound', speaker: 'Speaker 1',
     def: 'Farm to factory is the upstream stage where growers and processors turn raw produce, poultry and dairy into ready-to-cook ingredients that flow to McDonald’s distribution centres.',
@@ -13,7 +13,7 @@ const SEGMENTS = [
     key: ['4 gates', 'HACCP → SQMS → Sensory → DQMP'] },
   { n: 3, title: 'The Outsourcing Philosophy', domain: 'Inbound', speaker: 'Speaker 3',
     def: 'McDonald’s India outsources every supply chain activity to specialist partners and keeps only a very small, lean team to set standards and oversee the network.',
-    key: ['5-person team (2013)', '100% outsourced'] },
+    key: ['100% outsourced', '40 suppliers'] },
   { n: 4, title: 'Long-Range Forecasting', domain: 'Inbound', speaker: 'Speaker 4',
     def: 'Long-range forecasting tells suppliers what is coming, so capacity is ready before a single order arrives.',
     key: ['31Q', '3-month rolling forecast'] },
@@ -40,13 +40,13 @@ const SEGMENTS = [
 /* SUPPLIERS (Tab 1 map). Order matters: the first 7 are revealed one by one.
    sup = [supplier name, location, map x, map y]. Map is 30 wide x 34 tall. */
 const SUPPLIERS = [
-  { ing: 'Buns', layer: 'bun', asof: true, sup: [['Cremica Industries', 'Phillaur', 11, 5.5]] },
+  { ing: 'Buns', layer: 'bun', line: 'The buns are sourced from a local factory at Taloja.', sup: [['Local factory', 'Taloja', 3.6, 14.1]] },
   { ing: 'Chicken patty', layer: 'patty', sup: [['Vista Foods', 'Taloja', 5, 15.5]] },
   { ing: 'Cheese', layer: 'cheese', sup: [['Dynamix Dairy', 'Pune', 9, 18.3]] },
   { ing: 'Iceberg lettuce', layer: 'lettuce', sup: [['Trikaya Agriculture', 'Pune', 10.5, 20.3], ['Meena Agritech', 'Delhi', 9.5, 8.5], ['Ooty Farms & Orchards', 'Ooty', 11.5, 24.5]] },
   { ing: 'Dehydrated onions', layer: 'onion', sup: [['Jain Foods', 'Jalgaon', 11, 13.3]] },
   { ing: 'Eggless mayo', layer: 'mayo', sup: [['Quaker Cremica', 'Phillaur', 8.5, 4.2]] },
-  { ing: 'Sesame seeds', layer: 'sesame', sup: [['Supplier', 'Ghaziabad', 13, 9.6]] },
+  { ing: 'Sesame seeds', layer: 'sesame', sup: [['', 'Ghaziabad', 13, 9.6]] },
   { ing: 'Veg patty, nuggets, pineapple pie', rest: true, sup: [['Kitran Foods', 'Taloja', 7.5, 16.4]] },
   { ing: 'Dressed chicken', rest: true, sup: [['Riverdale', 'Talegaon', 6.2, 18.4]] },
   { ing: 'Fish fillet patties', rest: true, sup: [['Amalgam Foods', 'Kochi', 8.8, 27.2]] },
@@ -55,12 +55,12 @@ const SUPPLIERS = [
 ];
 const LOCAL_PINS = [
   { ing: 'Milk', note: 'Local authorised regional suppliers. Shortest shelf life, not shipped from Kalamboli.', x: 3, y: 19.6 },
-  { ing: 'Buns', note: 'Taloja factory, which also supplies Burger King and KFC.', x: 2.4, y: 15.2, today: true }
+  { ing: 'Buns', note: 'Local factory at Taloja.', x: 2.2, y: 16.4 }
 ];
 
 /* ONE_SUPPLIER (Tab 1, mode C): ingredient tiles with their one dedicated supplier. */
 const ONE_SUPPLIER = [
-  ['Buns', 'Cremica', 'bun'], ['Chicken patty', 'Vista Foods', 'burger'], ['Cheese', 'Dynamix Dairy', 'cheese'],
+  ['Buns', 'Local factory, Taloja', 'bun'], ['Chicken patty', 'Vista Foods', 'burger'], ['Cheese', 'Dynamix Dairy', 'cheese'],
   ['Lettuce', 'Trikaya Agriculture', 'lettuce'], ['Onions', 'Jain Foods', 'lettuce'], ['Mayo', 'Quaker Cremica', 'cup'],
   ['Fries', 'McCain Foods India', 'fries'], ['Fish patties', 'Amalgam Foods', 'burger'],
   ['Mutton', 'Al Kabeer', 'burger'], ['Sugar sachets', 'Dedicated supplier', 'receipt']
@@ -77,18 +77,6 @@ const GATES = [
   { id: 'DQMP', name: 'DQMP', color: '#D2403F', q: 'Does it stay safe while stored and moved?',
     facts: ['Audits warehouses, transport and the DC'] }
 ];
-
-/* HACCP_STAGES (Tab 2, mode B): the 7 nugget stages. ccp:true marks the Critical Control Point. */
-const HACCP_STAGES = [
-  { stage: 'Receiving', type: 'Biological', hazard: 'Salmonella in raw chicken', control: 'Approved supplier and inspection' },
-  { stage: 'Cold storage', type: 'Biological', hazard: 'Bacteria grow if too warm', control: 'Keep chilled, log temperature' },
-  { stage: 'Preparation', type: 'Chemical', hazard: 'Detergent left on equipment', control: 'Rinse and verify cleaning' },
-  { stage: 'Cooking', type: 'Biological', hazard: 'Bacteria survive undercooking', control: 'Cook to a core temperature', ccp: true },
-  { stage: 'Packaging', type: 'Physical', hazard: 'Metal fragment in product', control: 'Metal detector at the line' },
-  { stage: 'Frozen storage', type: 'Biological', hazard: 'Thawing and regrowth', control: 'Hold at -18°C or colder' },
-  { stage: 'Transport', type: 'Biological', hazard: 'Temperature rises on the road', control: 'Reefer truck with a set temperature' }
-];
-const HACCP_PRINCIPLES = ['Hazard analysis', 'CCPs', 'Critical limits', 'Monitoring', 'Corrective action', 'Verification', 'Records'];
 
 /* SCENARIOS (Tab 2, mode C) */
 const SCENARIOS = [
@@ -115,7 +103,7 @@ const OUTSOURCE = [
   ['Supplying', '40 suppliers', ''],
   ['Quality audits', 'Trained auditors', 'SQMS / DQMP']
 ];
-const NETWORK = ['Franchisees', 'Distributors (RKFL = 3PL)', 'Restaurants', 'Services', 'Food suppliers', 'Advertising cooperatives', 'Food purchasing cooperatives'];
+const NETWORK = ['Franchisees', 'Distributors (RKFL, third-party logistics)', 'Restaurants', 'Services', 'Food suppliers', 'Advertising cooperatives', 'Food purchasing cooperatives'];
 
 /* STORE_SCENARIO (Tab 6): the numbers on the mock ordering screen. */
 const STORE_SCENARIO = {
@@ -161,13 +149,6 @@ const QIP_BOXES = [
 ];
 const QIP_BAND = [-10, 0];
 
-/* SHELVES (Tab 9, mode B): expiry = days left. The smallest number goes out first (FIFO). */
-const SHELVES = [
-  { zone: 'dry', name: 'Dry Store', items: [['Cups', 40], ['Sauce packs', 22], ['Napkins', 90]] },
-  { zone: 'chilled', name: 'Chiller', items: [['Cheese', 9], ['Lettuce', 3], ['Milk', 5]] },
-  { zone: 'frozen', name: 'Freezer (CFD)', items: [['Fries', 120], ['Patties', 75], ['Nuggets', 60]] }
-];
-
 /* CONCEPTS: shown with the C key. [name, one plain line]. */
 const CONCEPTS = {
   1: [['Channel management', 'Bringing suppliers, manufacturers and distributors together to lower cost and raise efficiency.']],
@@ -181,27 +162,27 @@ const CONCEPTS = {
       ['External integration', 'Coordination reaches upstream and downstream beyond the firm.']],
   5: [['Inbound vs outbound logistics', 'The DC is where one ends and the other begins.'],
       ['Compressing the value chain', 'Cutting lead times gets goods to market faster.']],
-  6: [['Forecast inaccuracy and anticipation of shortages', 'Two classic causes of the bullwhip effect, kept under control by short horizons and a small buffer.']],
-  7: [['Logistics vs SCM', 'Logistics is supply driven; SCM is demand driven.'],
-      ['Bullwhip effect', 'Remedies are better information systems, lead-time management and proper inventory policy.']],
+  6: [['Forecast inaccuracy and anticipation of shortages', 'Two classic causes of over-ordering up the chain, kept under control by short horizons and a small buffer.']],
+  7: [['Logistics vs SCM', 'Logistics is supply driven; SCM is demand driven.']],
   8: [['Strengthen logistics', 'Storing, moving, transporting and handling material.'],
       ['Outbound logistics', 'Movement from the DC to the stores.']],
-  9: [['Two-way flows and inventory visibility', 'Minimum total cost. Waste is a cost integration tries to minimise.'],
+  9: [['Two-way flows and inventory visibility', 'Minimum total cost. Lean stock keeps cost down.'],
       ['Carrying cost', 'Lean stock avoids it.']],
   10: [['Role of logistics in SCM', 'Order fulfilment builds competitive advantage.']]
 };
 
-/* QUESTIONS: one per segment (10 has none). q = shown on the ticket, a = shown in the gold stamp. */
+/* QUESTIONS: only segments 4, 6 and 7 have a question (all multiple choice).
+   q = question, opts = the answer choices, correct = position of the right choice (0 = first), a = text in the gold stamp. */
 const QUESTIONS = {
-  1: { q: 'In McDonald’s India’s supply chain, how many core Tier-1 suppliers fulfil about 80% of demand?', a: '14 (out of 40 total suppliers)' },
-  2: { q: 'Which McDonald’s quality system, built on HACCP plus McDonald’s own principles, is mandated worldwide for manufacturing and processing plants?', a: 'SQMS (Supplier Quality Management Systems)' },
-  3: { q: 'Which supply chain concept, used as a worked example in our academic chapter, describes McDonald’s as a loosely coupled network of franchisees, suppliers, distributors and other partners?', a: 'The Extended Enterprise' },
-  4: { q: 'In the 31Q system, what does the ‘Q’ stand for, and how far ahead is the rolling forecast the DC gives to suppliers?', a: 'Quarterly monitoring. The DC gives suppliers a 3-month rolling forecast.' },
-  5: { q: 'Which two DCs in the national network are the primary, company-owned ones, and which two items skip the DC and go directly to the restaurant?', a: 'Noida and Mumbai. Buns and Coca-Cola.' },
-  6: { q: 'If a concert near a store is expected to raise sales and the system does not know about it, what should the manager do, and what is the cut-off time for placing that order?', a: 'Manually override the suggestion and order more (for example 3 cases instead of 2). Cut-off: about 12 PM for the next applicable delivery.' },
-  7: { q: 'In McDonald’s pull-supply chain, what must happen before a supplier starts production?', a: 'The restaurant places its order, which passes through the DC to the supplier: restaurant → DC → supplier → production.' },
-  8: { q: 'Why are buns ordered four days a week while frozen items are ordered only two days a week?', a: 'Buns last about 3 days; frozen and chilled products last much longer. Delivery frequency is driven by shelf life.' },
-  9: { q: 'McDonald’s India has an inventory turn ratio of 36. What does that mean, and what is the maximum inventory held in the system?', a: 'Stock is used and replaced about 36 times a year. Maximum held in the system: 10 days.' }
+  4: { q: 'In the 31Q system, what does the \u2018Q\u2019 stand for, and how far ahead is the rolling forecast the DC gives to suppliers?',
+       opts: ['Quality check, with a 3-year rolling forecast', 'Quarterly monitoring, with a 3-day rolling forecast', 'Quarterly monitoring, with a 3-month rolling forecast', 'Quantity check, with a 1-week rolling forecast'],
+       correct: 2, a: 'Quarterly monitoring. The DC gives suppliers a 3-month rolling forecast.' },
+  6: { q: 'A concert near a store will raise sales, but the system cannot see it. What should the manager do, and what is the cut-off for the order?',
+       opts: ['Trust the suggestion, because the system already knows about the concert', 'Override the suggestion and order more (for example 3 cases instead of 2) before the cut-off of about 12 PM', 'Wait for the concert and place a formal emergency order afterwards', 'Order fewer cases, because the projection is already high'],
+       correct: 1, a: 'Override the suggestion and order more (for example 3 cases instead of 2). Cut-off: about 12 PM for the next applicable delivery.' },
+  7: { q: 'Which description of RKFL is correct?',
+       opts: ['A McDonald\u2019s department that sets menu prices', 'A supplier that grows lettuce and potatoes', 'An independent logistics partner that manages all DCs and national truck movement', 'A franchisee that runs the West and South zone'],
+       correct: 2, a: 'RKFL is an independent logistics partner. It manages all DCs and handles all truck movement nationally.' }
 };
 
 /* TEAMS: names shown on the scoreboard. */
@@ -217,5 +198,5 @@ const JOURNEY = [
   ['tray', 'Store order', 'The system suggests, the manager decides'],
   ['truck', 'RKFL pull engine', 'Nothing is made until it is ordered'],
   ['van', 'Van delivery', 'Three temperature zones, one route'],
-  ['thermometer', 'Store storage', 'Check, store, first expiring first out']
+  ['thermometer', 'Store storage', 'Check every box, then turn stock about 36 times a year']
 ];

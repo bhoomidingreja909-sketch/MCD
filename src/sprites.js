@@ -79,6 +79,8 @@ const GRIDS = {
   handshake: ['HHHH..ffff..RRRR', 'HHHHffffffffRRRR', 'HHHHfofofofoRRRR', 'HHHHffffffffRRRR', 'HHHH.ffffff.RRRR', '.....oooooo.....'],
   receipt: ['WWWWWWWWW', 'WKKKKKKKW', 'WWWWWWWWW', 'WKKKKKWWW', 'WWWWWWWWW', 'WKKKKKKKW', 'WWWWWWWWW', 'WKKKWWKKW', 'WWWWWWWWW', 'W.WW.WW.W'],
   person: ['..ff..', '.ffff.', '.ffff.', '..XX..', '.XXXX.', 'XXXXXX', 'XXXXXX', '.PPPP.', '.P..P.', '.P..P.'],
+  farmer: ['...yyyyyy...', '..yyyyyyyy..', '....ffff...S', '....ffff...T', '...RRRRRR..T', '..RRRRRRRR.T', '..RRRRRRRR.T', '...HHHHHH..T', '...HH..HH..T', '...PP..PP..T'],
+  courier: ['...RRRRRR...', '..RRRRRRRR..', '....ffff....', '....ffff....', '..GGGGGGGG..', 'bbbGGGGGGGG.', 'bkbbGGGGGGG.', 'bbbbPPPPPP..', '....PP..PP..', '....PP..PP..'],
   crate: ['bbbbbbbbbbbb', 'bkkkkkkkkkkb', 'bkWWWWWWWWkb', 'bkWRRRRRRWkb', 'bkWWWWWWWWkb', 'bkkkkkkkkkkb', 'bbbbbbbbbbbb'],
   cross: ['RR....RR', 'RRR..RRR', '.RRRRRR.', '..RRRR..', '..RRRR..', '.RRRRRR.', 'RRR..RRR', 'RR....RR'],
   tick: ['.......NN', '......NNN', 'N....NNN.', 'NN..NNN..', 'NNNNNN...', '.NNNN....', '..NN.....'],

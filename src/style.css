@@ -38,10 +38,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tag{font:900 17px var(--mono);padding:1px 10px;border:3px solid var(--ink);text-transform:uppercase}
 .tag.Inbound{background:var(--sup);color:#fff}.tag.Operations{background:var(--gold)}.tag.Customer{background:var(--cust);color:#fff}
 #hd .spk{font-size:18px}
-#hd .def{font-size:20px;line-height:1.2;margin-top:6px}
+#hd .mh{display:flex;align-items:center;gap:10px;margin-top:6px;font:900 24px var(--mono)}
+#hd .mh .chip{font-size:18px;box-shadow:2px 2px 0 var(--ink)}
 #ctl{position:absolute;right:140px;bottom:122px;z-index:30;display:flex;gap:8px;align-items:center}
 .pill{background:#fff;border:3px solid var(--ink);padding:0 10px;font-size:16px;height:30px;display:flex;align-items:center;white-space:nowrap;box-shadow:3px 3px 0 var(--ink)}
-#bd{position:absolute;left:0;right:0;top:104px;bottom:0;padding:10px 16px;overflow:hidden}
+#bd{position:absolute;left:0;right:0;top:86px;bottom:0;padding:10px 16px;overflow:hidden}
 
 /* score + stopwatch + hint */
 #score{position:absolute;right:30px;top:66px;width:260px;height:42px;display:flex;gap:6px;z-index:30}
@@ -138,7 +139,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* generic bits for the tabs */
 .legend{font-size:20px;line-height:1.15}
-.pin{position:absolute;width:24px;height:24px;margin:-24px 0 0 -12px;background:var(--red);color:#fff;border:3px solid var(--ink);font:900 15px/18px var(--mono);text-align:center;box-shadow:2px 2px 0 var(--ink)}
+.pin{position:absolute;width:22px;height:22px;margin:-22px 0 0 -11px;background:var(--red);color:#fff;border:3px solid var(--ink);font:900 14px/16px var(--mono);text-align:center;box-shadow:2px 2px 0 var(--ink)}
 .pin:after{content:"";position:absolute;left:6px;top:21px;width:6px;height:6px;background:var(--ink)}
 .pin.local{background:var(--gold);color:var(--ink);width:28px;height:28px;margin-left:-14px;margin-top:-28px;line-height:22px;animation:pulse 1s steps(2) infinite}
 .pin.cur{background:var(--gold);color:var(--ink);animation:bob .8s steps(3) infinite}
@@ -147,7 +148,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tile{width:238px;height:96px;display:flex;align-items:center;gap:10px;padding:6px 10px;position:relative}
 .tile.glow{animation:pulse 1.6s steps(2) infinite}
 .tile.held{background:#e9c9c4;border-color:var(--red)}
-.mapbox{position:relative;width:372px;height:420px;flex:none}
+.mapbox{position:relative;width:392px;height:442px;flex:none;overflow:hidden}
+.mapbox>svg{position:absolute;left:0;top:0}
 .gate{width:206px;flex:none}
 .gate .gh{display:flex;align-items:center;gap:8px;padding:4px 10px;border:4px solid var(--ink);font:900 24px var(--mono)}
 .gate .gq{font-size:18px;padding:4px 8px;background:#fff;border:4px solid var(--ink);border-top:0;min-height:96px;line-height:1.2}
@@ -188,7 +190,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes spin36{from{transform:rotate(0)}to{transform:rotate(12960deg)}}
 .nd{padding:4px 12px;background:#fff;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);text-align:center;font-size:18px;white-space:nowrap}
 .nd.on{background:var(--gold)}
-.mover{position:absolute;left:0;top:0;offset-rotate:0deg;animation:mv 3.2s steps(32) infinite}
+.mover{position:absolute;left:0;top:0;offset-rotate:auto;animation:mv 6s linear infinite}
+.mover.rev{offset-rotate:reverse}
 @keyframes mv{from{offset-distance:0%}to{offset-distance:100%}}
 .flip{perspective:600px}
 .fcard{padding:6px 8px;text-align:center;min-height:150px;width:300px}
@@ -196,3 +199,19 @@ button{font:inherit;color:inherit;cursor:pointer}
 .glowitem{animation:pulse .8s steps(2) infinite;background:var(--gold)!important}
 .conf{position:absolute;inset:0;z-index:1;pointer-events:none;width:100%;height:100%}
 .sz{width:100%}
+
+/* multiple choice */
+#qb .tq{flex:none;padding:14px 34px;font-size:28px;min-height:120px}
+#qb .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 26px}
+#qb .opt{display:flex;gap:12px;align-items:center;text-align:left;background:#fff;border:4px solid var(--ink);padding:8px 12px;box-shadow:4px 4px 0 var(--ink);font-size:21px;line-height:1.15;min-height:84px}
+#qb .opt b{flex:none;width:38px;height:38px;background:var(--gold);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font:900 22px var(--mono)}
+#qb .opt.sel{background:#fbeaa0;transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+#qb .opt.right{background:#cdeccd;border-color:#2d7a31;animation:pop .4s steps(5) both}
+#qb .opt.wrong{background:#f3c9c4;border-color:var(--redS)}
+#qb .opt.dim{opacity:.45}
+#qb .ta{min-height:70px;flex:1}
+#qb .stamp{font-size:22px}
+#qb .tb{min-height:54px}
+.scrollbox{overflow-y:auto;scrollbar-width:thick;scrollbar-color:var(--red) var(--cream2)}
+.scrollbox::-webkit-scrollbar{width:16px}.scrollbox::-webkit-scrollbar-track{background:var(--cream2);border-left:3px solid var(--ink)}.scrollbox::-webkit-scrollbar-thumb{background:var(--red);border:3px solid var(--ink)}
+.clean #score,.clean #sw,.clean #hintchip,.clean #hint{display:none!important}

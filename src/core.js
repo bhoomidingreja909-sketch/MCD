@@ -66,7 +66,7 @@ function build() {
    <div class="k"><kbd>1-9, 0</kbd><span>Go to tab 1 to 9, tab 10</span><kbd>PgUp / PgDn</kbd><span>Previous / next tab</span>
    <kbd>Space / Enter</kbd><span>Main action, next step</span><kbd>← / →</kbd><span>Step back / forward</span>
    <kbd>M</kbd><span>Next mode in this tab</span><kbd>T</kbd><span>Question Break now</span><kbd>Esc</kbd><span>Close Question Break</span>
-   <kbd>B / Y / S</kbd><span>Point Burger / Fries / Skip</span><kbd>C</kbd><span>Concept links</span><kbd>R</kbd><span>Reset this tab</span>
+   <kbd>1-4</kbd><span>Pick an answer (in a question)</span><kbd>B / Y / S</kbd><span>Point Burger / Fries / Skip</span><kbd>C</kbd><span>Concept links</span><kbd>R</kbd><span>Reset this tab</span>
    <kbd>F</kbd><span>Fullscreen</span><kbd>P</kbd><span>Stopwatch start/pause/reset</span><kbd>↑ / ↓</kbd><span>Adjust (Tab 6)</span><kbd>H</kbd><span>This panel</span></div>
    <button class="btn red sm" data-a="scorereset" id="srbtn">Reset scores</button>`;
   renderScore(); fit();
@@ -102,12 +102,12 @@ function prevTab() { go(S.cur - 1); }
 /* ---------- stage rendering ---------- */
 function renderHead() {
   const sg = SEGMENTS[S.cur - 1], tab = mdl(S.cur), t = TS();
-  const letters = 'ABC';
-  const multi = tab.modes.length > 1;
-  $('#hd').innerHTML = `<div class="r1"><span class="num">${sg.n}</span><h1>${esc(sg.title)}</h1><span class="tag ${sg.domain}">${sg.domain}</span><span class="spk">${esc(sg.speaker)}</span></div>
-    <div class="def">${esc(sg.def)}</div>
-    `;
-  $('#ctl').innerHTML = `${multi ? `<span class="pill" title="Press M to switch mode">Mode ${letters[t.mode]}: ${esc(tab.modes[t.mode].name)} &middot; M</span>` : ''}<button class="btn sm" data-a="reset">Reset (R)</button>`;
+  const multi = tab.modes.length > 1, h = multi ? 86 : 54;
+  $('#app').classList.toggle('clean', !!tab.clean);
+  $('#hd').style.height = h + 'px'; $('#bd').style.top = h + 'px';
+  $('#hd').innerHTML = `<div class="r1"><span class="num">${sg.n}</span><h1>${esc(sg.title)}</h1>${tab.clean ? '' : `<span class="tag ${sg.domain}">${sg.domain}</span><span class="spk">${esc(sg.speaker)}</span>`}</div>
+    ${multi ? `<div class="mh"><span class="chip g">Mode ${'ABC'[t.mode]}</span><span>${esc(tab.modes[t.mode].name)}</span></div>` : ''}`;
+  $('#ctl').innerHTML = `<button class="btn sm" data-a="reset">Reset</button>`;
 }
 function render() {
   if (!S.cur) return;
@@ -137,7 +137,8 @@ function forward() {
   if (S.cur === 0) return go(1);
   const t = TS();
   if (t.step < maxStep()) setStep(t.step + 1);
-  else if (S.cur < 10) openQB();
+  else if (QUESTIONS[S.cur]) openQB();
+  else if (S.cur < 10) go(S.cur + 1);
 }
 function backward() { if (S.cur === 0) return; if (S.qb) return closeQB(false); const t = TS(); if (t.step > 0) setStep(t.step - 1); }
 function cycleMode() {
@@ -200,14 +201,16 @@ function openQB() {
   if (!q) return toast('No question for this segment');
   if (S.qb) return;
   closeConcepts();
-  S.qb = { n: S.cur, rev: false, aw: null };
+  S.qb = { n: S.cur, rev: false, aw: null, pick: null };
   $('#qb').innerHTML = `<div class="ticket"><div class="th"><span>ORDER TICKET #${S.cur}</span><span>Question for the class</span></div>
-    <div class="tq">${esc(q.q)}</div><div class="ta" id="qa"></div><div class="tb" id="qbtn"></div><div class="tm"><i></i></div></div>`;
+    <div class="tq">${esc(q.q)}</div><div class="opts" id="qo"></div><div class="ta" id="qa"></div><div class="tb" id="qbtn"></div><div class="tm"><i></i></div></div>`;
   $('#qb').classList.add('on'); updQB();
 }
+function pickOpt(i) { const q = S.qb; if (!q || q.rev || i >= QUESTIONS[q.n].opts.length) return; q.pick = i; updQB(); }
 function updQB() {
-  const q = S.qb; if (!q) return;
-  $('#qa').innerHTML = q.rev ? `<span class="stamp gold">${esc(QUESTIONS[q.n].a)}</span>` : `<span class="lg" style="opacity:.6">Space to reveal the answer</span>`;
+  const q = S.qb; if (!q) return; const Q = QUESTIONS[q.n];
+  $('#qo').innerHTML = Q.opts.map((o, i) => `<button class="opt ${q.pick === i ? 'sel' : ''} ${q.rev && i === Q.correct ? 'right' : ''} ${q.rev && q.pick === i && i !== Q.correct ? 'wrong' : ''} ${q.rev && i !== Q.correct && q.pick !== i ? 'dim' : ''}" data-a="opt" data-v="${i}"><b>${'ABCD'[i]}</b><span>${esc(o)}</span></button>`).join('');
+  $('#qa').innerHTML = q.rev ? `<span class="stamp gold">${esc(Q.a)}</span>` : '';
   $('#qbtn').innerHTML = !q.rev ? '' : q.aw ? `<span class="chip g lg">${q.aw === 'skip' ? 'Skipped. No point.' : '+1 for ' + (q.aw === 'burger' ? TEAMS.burger : TEAMS.fries)}</span><span class="lg" style="align-self:center">Space for next segment</span>`
     : `<button class="btn red" data-a="award" data-v="burger">+1 ${TEAMS.burger} (B)</button><button class="btn" data-a="award" data-v="fries">+1 ${TEAMS.fries} (Y)</button><button class="btn cream" data-a="award" data-v="skip">Skip (S)</button>`;
 }
@@ -264,6 +267,7 @@ document.addEventListener('click', e => {
   if (a === 'tab') return go(+v);
   if (a === 'reset') return resetTab();
   if (a === 'award') return award(v);
+  if (a === 'opt') return pickOpt(+v);
   if (a === 'hint') return toggleHint(false);
   if (a === 'hintt') return toggleHint();
   if (a === 'scorereset') {
@@ -278,6 +282,7 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key, K = k.length === 1 ? k.toLowerCase() : k;
   const stop = () => e.preventDefault();
+  if (S.qb && /^[1-4]$/.test(k)) { stop(); return pickOpt(+k - 1); }
   if (/^[0-9]$/.test(k)) { stop(); return go(k === '0' ? 10 : +k); }
   if (k === 'PageDown') { stop(); return S.cur === 0 ? go(1) : nextTab(); }
   if (k === 'PageUp') { stop(); return prevTab(); }

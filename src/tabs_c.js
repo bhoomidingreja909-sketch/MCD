@@ -41,19 +41,23 @@ TABS[7] = {
       const stores = [['Kharghar Little World', 560, 50], ['Kharghar Pacific', 840, 110], ['Store C, same route', 1090, 160]];
       const stars = Array.from({ length: 26 }, (_, i) => `<i style="position:absolute;left:${(i * 197) % 1280}px;top:${(i * 53) % 150}px;width:4px;height:4px;background:#fff"></i>`).join('');
       let routes = '', movers = '';
-      const vansN = s === 0 ? 0 : s === 1 ? 3 : 1;
-      if (s === 1) { stores.forEach((t, i) => { const d = `M130 120 L${t[1]} ${t[2] + 14}`; routes += `<path d="${d}" stroke="#F5C518" stroke-width="4" stroke-dasharray="10 8" fill="none"/>`; movers += `<div class="mover" style="offset-path:path('${d}');animation-delay:-${i * 0.5}s;margin:-16px 0 0 -30px">${SP.van(2)}</div>`; }); }
-      if (s >= 2) { const d = `M130 120 L560 64 L840 124 L1090 174`; routes += `<path d="${d}" stroke="#4CAF50" stroke-width="5" stroke-dasharray="10 8" fill="none"/>`; movers += `<div class="mover" style="offset-path:path('${d}');margin:-16px 0 0 -30px;${s >= 4 ? 'animation-direction:reverse' : ''}">${SP.van(2)}</div>`; }
-      const map = `<div style="position:relative;height:236px;background:#1f2430;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);overflow:hidden">${stars}<div style="position:absolute;right:20px;top:8px">${SP.cloud(4)}</div>
+      const vansN = s === 0 ? 0 : s === 1 ? 3 : 1, late = s >= 6, ontime = s === 5;
+      if (s === 1) { stores.forEach((t, i) => { const d = `M130 120 L${t[1]} ${t[2] + 14}`; routes += `<path d="${d}" stroke="#F5C518" stroke-width="4" stroke-dasharray="10 8" fill="none"/>`; movers += `<div class="mover" style="offset-path:path('${d}');animation-delay:-${i * 0.5}s;animation-duration:5s">${SP.van(2)}</div>`; }); }
+      const rd = `M130 120 L560 64 L840 124 L1090 174`;
+      if (s >= 2 && !late) { routes += `<path d="${rd}" stroke="${ontime ? '#4CAF50' : '#4CAF50'}" stroke-width="5" stroke-dasharray="10 8" fill="none"/>`; movers += `<div class="mover ${s === 4 ? 'rev' : ''}" style="offset-path:path('${rd}');${s === 4 ? 'animation-direction:reverse;' : ''}animation-duration:6s">${SP.van(2, s === 4 ? { style: 'transform:scaleY(-1)' } : {})}</div>`; }
+      if (late) { routes += `<path d="${rd}" stroke="#D2403F" stroke-width="5" stroke-dasharray="10 8" fill="none"/>`; movers += `<div style="position:absolute;left:200px;top:80px">${SP.van(2)}</div><div class="stamp new" style="position:absolute;left:230px;top:30px;font-size:22px;border-width:4px">BROKEN DOWN</div>`; }
+      const map = `<div style="position:relative;height:236px;background:${late ? '#3a1f26' : '#1f2430'};border:4px solid ${late ? 'var(--red)' : 'var(--ink)'};box-shadow:6px 6px 0 var(--ink);overflow:hidden">${stars}<div style="position:absolute;right:20px;top:8px">${SP.cloud(4)}</div>
         <div style="position:absolute;left:20px;top:72px">${SP.dc(4)}<div class="chip" style="position:absolute;left:0;bottom:-34px;font-size:16px">DC (night)</div></div>
         <svg width="1294" height="236" style="position:absolute;left:0;top:0" shape-rendering="crispEdges">${routes}</svg>
-        ${stores.map(t => `<div style="position:absolute;left:${t[1] - 20}px;top:${t[2] - 6}px">${SP.store(0.9)}<div class="chip" style="position:absolute;left:-30px;top:44px;font-size:15px;white-space:nowrap;padding:0 4px">${t[0]}</div></div>`).join('')}${movers}
+        ${stores.map((t, k) => `<div style="position:absolute;left:${t[1] - 20}px;top:${t[2] - 6}px;${late ? 'opacity:.55' : ''}">${SP.store(0.9)}<div class="chip" style="position:absolute;left:-30px;top:44px;font-size:15px;white-space:nowrap;padding:0 4px">${t[0]}</div></div>`).join('')}${movers}
         <span class="chip" style="position:absolute;left:12px;top:10px;font-size:15px">illustrative</span>
-        ${s ? `<div class="card ${s === 1 ? 'red' : 'gold'} new" style="position:absolute;left:12px;top:40px;padding:2px 10px;display:flex;gap:10px;align-items:center"><b class="big" style="font-size:40px" data-count="${vansN}|500|0">${vansN}</b><span class="sm">${s === 1 ? 'vans needed (one per store)' : 'van needed (one route)'}</span></div>` : ''}</div>`;
+        ${s && !ontime && !late ? `<div class="card ${s === 1 ? 'red' : 'gold'} new" style="position:absolute;left:12px;top:40px;padding:2px 10px;display:flex;gap:10px;align-items:center"><b class="big" style="font-size:40px" data-count="${vansN}|500|0">${vansN}</b><span class="sm">${s === 1 ? 'vans needed (one per store)' : 'van needed (one route)'}</span></div>` : ''}
+        ${ontime ? '<div class="stamp green new" style="position:absolute;left:30px;top:30px;font-size:44px;background:#fff">\u2713 ON TIME</div>' : ''}
+        ${late ? '<div class="stamp new" style="position:absolute;right:40px;top:90px;font-size:48px;background:#fff">DELAYED</div>' : ''}</div>`;
       let info = '';
       if (s >= 3) info += `<div class="card white new" style="font-size:18px;line-height:1.15;flex:1;min-width:380px"><b>Outstation:</b> Kolhapur, Satara and Goa are served by combining multiple stores on one route. No dedicated van per outlet.</div>`;
       if (s >= 4) info += `<div class="card white new" style="font-size:18px;line-height:1.15;flex:1;min-width:380px"><b>Return trip:</b> ${['empty bottles', 'racks', 'plastic crates (for buns)'].map(x => `<span class="chip" style="font-size:16px;padding:0 6px">${x}</span>`).join(' ')}</div>`;
-      if (s >= 5) info += `<div class="card ${s >= 6 ? 'red' : 'gold'} new" style="font-size:19px;line-height:1.15;width:100%"><b>Tonight\u2019s delivery:</b> ${s >= 6 ? 'DELAYED (about 20% of deliveries): breakdown, driver leave or strike. The store holds operations to unload chilled, freezer and dry stock, then resumes.' : 'ON TIME (about 80% of deliveries). Stock is unloaded and shelved before opening.'}</div>`;
+      if (s >= 5) info += `<div class="card ${s >= 6 ? 'red' : 'green'} new" style="${s >= 6 ? '' : 'background:#cdeccd;'}font-size:19px;line-height:1.15;width:100%"><b>Tonight\u2019s delivery:</b> ${s >= 6 ? 'DELAYED (about 20% of deliveries): breakdown, driver leave or strike. The store holds operations to unload chilled, freezer and dry stock, then resumes.' : 'ON TIME (about 80% of deliveries). Stock is unloaded and shelved before opening.'}</div>`;
       const lead = s === 0 ? 'Press Space: what is the cheapest way to deliver tonight?' : s === 1 ? 'One van per store: three vans, mostly half empty.' : s === 2 ? 'Route-based consolidation: one van serves about 2 to 3 stores on the same route.' : '';
       return map + `<div class="row" style="gap:10px;flex-wrap:wrap;margin-top:12px;align-items:flex-start">${lead ? `<div class="card white lg grow">${lead}</div>` : ''}${info}</div>`;
     } },
@@ -71,8 +75,20 @@ TABS[7] = {
 /* ---------------- TAB 9 ---------------- */
 const LADDER9 = [['HACCP + SQMS', 'supplier', '#4CAF50'], ['Sensory', 'plant', '#9B7FD6'], ['DQMP', 'warehouse', '#D2403F'], ['QIP', 'store', '#FFFFFF']];
 TABS[8] = {
-  init: () => ({ dec: [], auto: [], flag: false, waste: 0, gone: [], autoDrop: false }),
+  init: () => ({ dec: [], auto: [] }),
   modes: [
+    { name: 'Turn 36', max: 4, render(c) {
+      const s = c.step;
+      let ring = '';
+      for (let i = 0; i < 36; i++) { const a = -90 + i * 10, x = 100 + Math.cos(a * Math.PI / 180) * 88 - 7, y = 100 + Math.sin(a * Math.PI / 180) * 88 - 7; ring += `<i class="${i === 0 ? 'on' : ''}" style="left:${x}px;top:${y}px;${i === 0 ? '' : 'background:#E9C27A'}"></i>`; }
+      const left = s >= 1 ? `<div class="col" style="align-items:center;gap:8px;width:300px"><div class="ring ${s === 1 ? 'spin36' : ''}" style="width:200px;height:200px">${ring}</div>
+        <div class="big"><span ${s === 1 ? 'data-count="36|3000|0"' : ''}>36</span></div><div class="cap">turns a year</div>${s >= 2 ? '<div class="card red c new"><div class="mid" style="font-size:30px">365 ÷ 36 ≈ 10 days</div></div>' : ''}</div>` : '';
+      const sizes = (ic, name) => `<div class="c">${[2, 3, 4].map(z => SP[ic](z)).join(' ')}<div class="sm">${name}: S, M, L</div></div>`;
+      const right = s === 2 ? `<div class="card gold lg c grow new" style="margin-top:60px;font-size:30px;align-self:flex-start">Stock cycles roughly every 10 days. Max 10 days of inventory in the system.</div>` : s >= 3 ? `<div class="col grow new" style="gap:10px"><div class="row" style="gap:12px"><div class="card white c res"><b>30 to 35</b><span class="sm">independent SKUs</span></div><span class="mid">→</span><div class="card gold c res"><b>100 to 150</b><span class="sm">sellable combinations</span></div></div>
+        <div class="card white row" style="justify-content:space-around;align-items:flex-end">${sizes('burger', 'Meals')}${sizes('cup', 'Drinks')}${sizes('fries', 'Fries')}</div><div class="sm">Meal and drink size variants (small, medium, large) fan out from the same few items.</div>${s >= 4 ? '<div class="card red c lg new">Short list + high turnover + perishable = frequent, small, shelf-life-based deliveries.</div>' : ''}</div>` : '';
+      return `<div class="row" style="gap:20px;align-items:flex-start">${left || '<div class="card white lg c grow" style="margin-top:80px">How fast does stock turn over?</div>'}${right}</div>
+        `;
+    } },
     { name: 'Night Shift, QIP and Pyrometer', max: QIP_BOXES.length * 2 + 1,
       render(c) {
         const s = c.step, n = QIP_BOXES.length, st = c.st;
@@ -104,44 +120,7 @@ TABS[8] = {
       sync(st, e, old) { // Space on a "reading" step auto-decides the correct way
         if (e >= 2 && e % 2 === 0 && e <= QIP_BOXES.length * 2) { const bi = e / 2 - 1; if (st.dec[bi] === undefined) { st.dec[bi] = QIP_BOXES[bi].ok ? 'accept' : 'return'; st.auto[bi] = true; } }
       }
-    },
-    { name: 'CFD Shelves, FIFO and Waste', max: 6,
-      sync(st, e) {
-        if (e >= 5 && !st.autoDrop && st.waste === 0) { st.gone.push('1:1'); st.waste = 1; st.autoDrop = true; }
-        if (e < 5 && st.autoDrop) { st.gone = st.gone.filter(x => x !== '1:1'); st.waste = Math.max(0, st.waste - 1); st.autoDrop = false; }
-      },
-      render(c) {
-        const s = c.step, st = c.st;
-        const shelves = SHELVES.map((sh, zi) => {
-          const live = sh.items.map((it, ii) => [it, ii]).filter(x => !st.gone.includes(zi + ':' + x[1]));
-          const mn = Math.min(...live.map(x => x[0][1]));
-          return `<div class="zone shelf" style="background:${zoneColor(sh.zone)};min-height:172px;padding:4px 10px"><div class="mid" style="font-size:22px">${sh.name}</div><div class="col" style="gap:4px;margin-top:4px">${live.map(([it, ii]) => `<div class="item ${s >= 3 && it[1] === mn ? 'glowitem' : ''}" data-drag="${zi}:${ii}" style="font-size:18px;justify-content:space-between;padding:0 8px"><span>${esc(it[0])}</span><span class="chip" style="font-size:15px;padding:0 5px">${it[1]} days left</span></div>`).join('') || '<span class="sm">Empty</span>'}</div></div>`;
-        }).join('');
-        const bin = `<div class="zone c ${s >= 5 ? '' : 'ghost'}" data-drop="bin" style="width:250px;background:#fff;min-height:172px;padding:2px">${SP.bin(4)}<div class="mid" style="font-size:24px">Raw Waste</div><div class="mid red-t" data-count="${st.waste}|500|0">${st.waste}</div><div class="sm">${s >= 5 ? 'Drag items here' : 'items binned'}</div></div>`;
-        const lines = [];
-        if (s === 2) lines.push('<div class="card red lg c new" style="padding:1px 10px">Which one goes out first?</div>');
-        if (s >= 3) lines.push('<div class="card gold c" style="font-size:20px;padding:1px 10px">FIFO: first expiring, first out. The glowing item leaves first.</div>');
-        if (s >= 4) lines.push('<div class="card white cap new"><b>Nightly:</b> inventory checked, expiry dates tracked. <b>Weekly:</b> physical stock check. ↻ The nightly count loops back into the next order: the pull signal (Tab 6).</div>');
-        if (s >= 5) lines.push('<div class="card white new" style="font-size:19px;line-height:1.15;padding:3px 10px">Waste is recorded in the same system that drives ordering. Cardboard goes to a local vendor. Waste stays at the store: suppliers like milk vendors do not take back unsold stock.</div>');
-        if (s >= 6) lines.push(`<div class="card gold new row" style="gap:12px;font-size:19px;line-height:1.15;padding:3px 10px"><span style="transform:scaleX(-1);display:inline-block">${SP.truck(1.5)}</span><span><b>Reverse flow:</b> failed items go back to the DC (credit). Empty bottles, racks and crates return on the same fleet.</span></div>`);
-        return `<div class="row" style="gap:12px;align-items:flex-start">${s ? shelves : '<div class="card white lg c grow" style="margin-top:60px">Three shelf zones in the store.</div>'}${s >= 1 ? bin : ''}</div><div class="col" style="gap:5px;margin-top:8px">${lines.join('')}</div>`;
-      },
-      drop(id, target, c) {
-        if (target !== 'bin') return; c.st.gone.push(id); c.st.waste++; c.rr();
-      }
-    },
-    { name: 'Turn 36', max: 4, render(c) {
-      const s = c.step;
-      let ring = '';
-      for (let i = 0; i < 36; i++) { const a = -90 + i * 10, x = 100 + Math.cos(a * Math.PI / 180) * 88 - 7, y = 100 + Math.sin(a * Math.PI / 180) * 88 - 7; ring += `<i class="${i === 0 ? 'on' : ''}" style="left:${x}px;top:${y}px;${i === 0 ? '' : 'background:#E9C27A'}"></i>`; }
-      const left = s >= 1 ? `<div class="col" style="align-items:center;gap:8px;width:300px"><div class="ring ${s === 1 ? 'spin36' : ''}" style="width:200px;height:200px">${ring}</div>
-        <div class="big"><span ${s === 1 ? 'data-count="36|3000|0"' : ''}>36</span></div><div class="cap">turns a year</div>${s >= 2 ? '<div class="card red c new"><div class="mid" style="font-size:30px">365 ÷ 36 ≈ 10 days</div></div>' : ''}</div>` : '';
-      const sizes = (ic, name) => `<div class="c">${[2, 3, 4].map(z => SP[ic](z)).join(' ')}<div class="sm">${name}: S, M, L</div></div>`;
-      const right = s === 2 ? `<div class="card gold lg c grow new" style="margin-top:60px;font-size:30px;align-self:flex-start">Stock cycles roughly every 10 days. Max 10 days of inventory in the system.</div>` : s >= 3 ? `<div class="col grow new" style="gap:10px"><div class="row" style="gap:12px"><div class="card white c res"><b>30 to 35</b><span class="sm">independent SKUs</span></div><span class="mid">→</span><div class="card gold c res"><b>100 to 150</b><span class="sm">sellable combinations</span></div></div>
-        <div class="card white row" style="justify-content:space-around;align-items:flex-end">${sizes('burger', 'Meals')}${sizes('cup', 'Drinks')}${sizes('fries', 'Fries')}</div><div class="sm">Meal and drink size variants (small, medium, large) fan out from the same few items.</div>${s >= 4 ? '<div class="card red c lg new">Short list + high turnover + perishable = frequent, small, shelf-life-based deliveries.</div>' : ''}</div>` : '';
-      return `<div class="row" style="gap:20px;align-items:flex-start">${left || '<div class="card white lg c grow" style="margin-top:80px">How fast does stock turn over?</div>'}${right}</div>
-        `;
-    } }
+    }
   ]
 };
 

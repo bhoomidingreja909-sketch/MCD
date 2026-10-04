@@ -12,7 +12,7 @@ TABS[3] = {
       const band = (w, bg, big, txt, on, fresh) => on ? `<div class="card ${fresh ? 'new wipe' : ''}" style="width:${w}px;height:46px;background:${bg};display:flex;align-items:center;gap:12px;padding:0 12px"><span class="mid" style="font-size:30px">${big}</span><span style="font-size:18px;line-height:1.05">${txt}</span></div>` : '<div style="height:46px"></div>';
       const bands = `<div class="col" style="width:820px;flex:none;gap:6px">${band(820, '#fff', '3', 'Three-year rolling plan: long-range direction', s >= 1, s === 1)}${band(620, '#fbeaa0', '1', 'Detailed one-year forecast', s >= 2, s === 2)}${band(440, '#cdeccd', 'Q', 'Quarterly monitoring: actual vs plan', s >= 3, s === 3)}</div>`;
       const big = s >= 4 ? `<div class="card red new c grow" style="height:150px;display:flex;align-items:center;justify-content:center"><span class="xl" style="font-size:110px">31Q</span></div>` : `<div class="card c grow" style="height:150px;display:flex;align-items:center;justify-content:center"><span class="xl" style="opacity:.25">?</span></div>`;
-      const LAD = [[100, '#D2403F', '3 years (rolling)'], [82, '#E0753F', '1 year (detailed)'], [64, '#F0A35E', 'Quarterly review'], [46, '#F5C518', 'DC to suppliers: 3-month rolling forecast'], [30, '#A9B858', 'Store to DC: 3 days to 1 week'], [14, '#6C8EAD', 'Store’s actual order via ERP Fusion (Tab 6)']];
+      const LAD = [[100, '#D2403F', '3 years (rolling)'], [82, '#E0753F', '1 year (detailed)'], [64, '#F0A35E', 'Quarterly review'], [46, '#F5C518', 'Distribution centre (DC) to suppliers: 3-month rolling forecast'], [30, '#A9B858', 'Store to DC: 3 days to 1 week'], [14, '#6C8EAD', 'Store’s actual order via ERP Fusion (Tab 6)']];
       const upto = s >= 7 ? 6 : s >= 6 ? 5 : s >= 5 ? 3 : 0;
       const lad = LAD.slice(0, upto).map((r, k) => `<div class="row ${(s === 5 && k < 3) || (s === 6 && k >= 3 && k < 5) || (s === 7 && k === 5) ? 'new wipe' : ''}" style="gap:10px;height:34px"><div style="width:${r[0] * 7}px;height:28px;background:${r[1]};border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);flex:none"></div><span class="cap">${r[2]}</span></div>`).join('');
       return `<div class="row" style="gap:14px;align-items:stretch">${bands}${big.replace('height:150px', 'height:150px')}</div>
@@ -21,7 +21,7 @@ TABS[3] = {
     } },
     { name: 'Why Forecast a Pull Chain?', max: 4, render(c) {
       const s = c.step, on = s === 2 || s >= 4;
-      const st = [['Restaurant', 'burger'], ['DC', 'dc'], ['Supplier', 'factory'], ['Production', 'gear']];
+      const st = [['Restaurant', 'burger'], ['Distribution centre', 'dc'], ['Supplier', 'factory'], ['Production', 'gear']];
       const chain = st.map((x, i) => `<div class="card white c ${s === 1 ? 'new' : ''}" style="width:240px;padding:6px"><div>${SP[x[1]](x[1] === 'gear' ? 5 : 3)}</div><b class="lg">${x[0]}</b></div>${i < 3 ? '<span class="mid">→</span>' : ''}`).join('');
       let mid = '';
       if (s >= 2) {
@@ -41,10 +41,10 @@ TABS[3] = {
         const y = 12 + i * 54; lines += i < n ? `<line x1="250" y1="140" x2="470" y2="${y + 22}" stroke="#2B2622" stroke-width="4"/>` : '';
         spokes += `<div class="card ${i < n ? 'gold' : ''} ${i === s - 1 ? 'new left' : ''}" style="position:absolute;left:470px;top:${y}px;width:620px;${i < n ? '' : 'opacity:.35'}">${i + 1}. ${t}</div>`;
       });
-      const flow = s >= 6 ? `<div class="row new" style="gap:10px;margin-top:6px"><div class="card white c" style="flex:1"><b>Suppliers</b><div class="sm">on SAP</div></div><span class="mid">→</span><div class="card white c" style="flex:2;padding:2px 8px"><b>DCs on RAMCO Marshall ERP with Cobra</b><div style="font-size:17px;line-height:1.1">Automates store-order upload, store scheduling and forecast orders</div></div><span class="mid">→</span><div class="card white c" style="flex:1"><b>Stores</b><div class="sm">ERP Fusion</div></div></div>` : '';
+      const flow = s >= 6 ? `<div class="row new" style="gap:10px;margin-top:6px"><div class="card white c" style="flex:1"><b>Suppliers</b><div class="sm">on SAP</div></div><span class="mid">→</span><div class="card white c" style="flex:2;padding:2px 8px"><b>DCs on RAMCO Marshall ERP with Cobra</b><div style="font-size:17px;line-height:1.1">Automates store-order upload, store scheduling and forecast orders</div></div><span class="mid">→</span><div class="card white c" style="flex:1"><b>Stores</b><div class="sm">order system</div></div></div>` : '';
       return `<div style="position:relative;height:${s >= 6 ? 280 : 340}px"><svg width="1294" height="300" style="position:absolute;left:0;top:0" shape-rendering="crispEdges">${lines}</svg>
         <div class="card red c" style="position:absolute;left:30px;top:70px;width:220px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center">${SP.handshake(4)}<b class="lg">RKFL</b><span class="sm">sole distribution partner</span></div>${spokes}</div>${flow}
-        ${s >= 7 ? `<div class="chip g new" style="margin-top:8px;font-size:20px">Same trust-based approach as with suppliers: KPIs, no legal SLA.</div>` : ''}`;
+        ${s >= 7 ? `<div class="chip g new" style="margin-top:8px;font-size:20px">Same trust-based approach as with suppliers: KPIs instead of a legal contract.</div>` : ''}`;
     } }
   ]
 };
@@ -59,30 +59,27 @@ TABS[4] = {
       const rest = [['Gujarat', 250, 0], ['Mumbai', 470, 1], ['Pune', 610, 1], ['Aurangabad', 750, 1], ['Goa', 890, 1], ['Hyderabad', 1100, 2]];
       const RY = 282, HY = 100;
       let lines = '';
-      if (s >= 1) hubs.forEach(h => { lines += `<line x1="647" y1="38" x2="${h[1]}" y2="${HY}" stroke="#2B2622" stroke-width="4"/>`; });
-      if (s >= 2) rest.forEach(r => { lines += `<line x1="${hubs[r[2]][1]}" y1="${HY + 104}" x2="${r[1]}" y2="${RY}" stroke="#2B2622" stroke-width="4"/>`; });
+      if (s >= 1) hubs.forEach(h => { lines += `<path d="M647 40 C647 75 ${h[1]} 65 ${h[1]} 100" fill="none" stroke="#2B2622" stroke-width="4"/>`; });
+      if (s >= 2) rest.forEach(r => { const hx = hubs[r[2]][1]; lines += `<path d="M${hx} ${HY + 104} C${hx} 245 ${r[1]} 240 ${r[1]} ${RY}" fill="none" stroke="#2B2622" stroke-width="4"/>`; });
       if (s >= 4) lines += [[300, 470], [300, 610], [900, 750], [900, 890]].map(p => `<line x1="${p[0]}" y1="44" x2="${p[1]}" y2="${RY}" stroke="#D2403F" stroke-width="5" stroke-dasharray="12 8"/>`).join('') + `<line x1="1190" y1="76" x2="1100" y2="${RY}" stroke="#4CAF50" stroke-width="5" stroke-dasharray="4 8"/>`;
       const at = (x, y, h, cls = '') => `<div style="position:absolute;left:${x}px;top:${y}px;transform:translateX(-50%)"><div class="${cls}">${h}</div></div>`;
       let h = at(647, 0, `<div class="card white c" style="padding:2px 14px"><b>Suppliers</b></div>`);
       if (s >= 1) hubs.forEach((x, i) => { h += at(x[1], HY, `<div class="card red c" style="padding:2px 10px;font-size:19px">${SP.dc(3)}<div>${x[0]}</div></div>`, s === 1 ? 'new' : ''); });
       if (s >= 2) rest.forEach(r => { h += at(r[1], RY, `<div class="card gold c" style="padding:0 10px;font-size:19px">${r[0]}</div>`, s === 2 ? 'new' : ''); });
       let trucks = '';
-      if (s >= 3) [['M647 40 L250 100 L250 290', 0], ['M647 40 L647 100 L610 290', 0.4], ['M647 40 L1060 100 L1100 290', 0.8]].forEach(t => { trucks += `<div class="mover" style="offset-path:path('${t[0]}');animation-delay:-${t[1]}s;margin:-14px 0 0 -28px">${SP.truck(1.5)}</div>`; });
+      const supHub = hx => `M647 40 C647 75 ${hx} 65 ${hx} 100`, hubRest = (hx, rx) => `M${hx} ${HY + 104} C${hx} 245 ${rx} 240 ${rx} ${RY}`;
+      if (s >= 2) { /* routes are drawn as the same curves the trucks drive */ }
+      if (s >= 3) [[0, 250, 250], [1, 647, 470], [1, 647, 610], [1, 647, 750], [1, 647, 890], [2, 1060, 1100]].forEach((t, k) => {
+        const d = supHub(t[1]) + ` L${t[1]} ${HY + 104} ` + hubRest(t[1], t[2]).replace(/^M\S+ \S+ /, '');
+        trucks += `<div class="mover" style="offset-path:path('${d}');animation-delay:-${(k * 1.0).toFixed(1)}s">${SP.truck(1.5, t[2] < t[1] ? { style: 'transform:scaleY(-1)' } : {})}</div>`;
+      });
       if (s >= 4) {
         h += at(300, 0, `<div class="card white c" style="padding:2px 10px;font-size:18px;border-color:#D2403F;width:230px">Taloja factory: buns</div>`, 'new') + at(900, 0, `<div class="card white c" style="padding:2px 10px;font-size:18px;border-color:#D2403F;width:250px">Coca-Cola: own distribution</div>`, 'new') + at(1190, 0, `<div class="card white c" style="padding:2px 8px;font-size:16px;line-height:1.05;border-color:#4CAF50;width:190px">Milk: local authorised regional suppliers</div>`, 'new');
       }
       return `<div style="position:relative;width:${W}px;height:410px"><svg width="${W}" height="410" style="position:absolute;left:0;top:0" shape-rendering="crispEdges">${lines}</svg>${h}${trucks}
         <span class="chip d" style="position:absolute;left:0;top:44px">West &amp; South zone</span>
-        <div class="col" style="position:absolute;left:0;bottom:6px;gap:6px"><span class="chip">DQMP audits the DC warehouses</span><span class="chip">Fleet: frozen, chilled and dry (Tab 8)</span></div>
+        <div class="col" style="position:absolute;left:0;bottom:6px;gap:6px"><span class="chip">DQMP audits the DC warehouses</span></div>
         ${s >= 4 ? `<div class="card red new c lg" style="position:absolute;right:0;bottom:4px;width:640px">Only two items bypass the DC: buns and Coke.</div>` : ''}</div>`;
-    } },
-    { name: 'National View', max: 4, render(c) {
-      const s = c.step;
-      const DCS = [['Noida', 'Primary, company-owned', 10.5, 7.8, 1], ['Mumbai', 'Primary, company-owned', 5, 16.5, 1], ['Bengaluru', 'Secondary, leased', 12.5, 24, 0], ['Kolkata', 'Secondary, leased', 21, 11.5, 0]];
-      let pins = ''; DCS.forEach((d, i) => { if (i < s) pins += mapPin(d[2], d[3], i + 1, `${d[4] ? '' : 'cur'} ${i === s - 1 ? 'new' : ''}`); });
-      const list = DCS.map((d, i) => i < s ? `<div class="card ${d[4] ? 'red' : 'gold'} ${i === s - 1 ? 'new left' : ''} row" style="gap:12px;padding:3px 12px"><span class="chip">${i + 1}</span><div class="mid" style="font-size:28px;width:230px">${d[0]}</div><div class="cap">${d[1]}</div></div>` : '').join('');
-      return `<div class="row" style="gap:20px;align-items:flex-start">${indiaMap(pins)}<div class="col grow" style="gap:8px"><div class="row" style="gap:10px"><span class="chip d lg">National view</span>${b13()}</div>
-        ${list || '<div class="card white lg">Four DCs serve the national network.</div>'}${s >= 4 ? '<div class="card white new lg">Two primary DCs are company-owned. Two secondary DCs are leased.</div>' : ''}</div></div>`;
     } },
     { name: 'Four Ways to Keep Inbound Lead Time Short', max: 5, render(c) {
       const s = c.step;
@@ -137,26 +134,8 @@ TABS[5] = {
 };
 
 /* ---------------- TAB 7 ---------------- */
-function bullwhip(push) {
-  return {
-    name: push ? 'Bullwhip Test: PUSH' : 'Bullwhip Test: PULL', max: 4,
-    render(c) {
-      const s = c.step, names = ['Restaurant', 'DC', 'Supplier', 'Production'];
-      const amp = push ? [0.12, 0.3, 0.55, 0.85] : [0.12, 0.03, 0.02, 0.01];
-      const bars = names.map((n, i) => `<div class="c"><div class="vbar" style="width:96px;height:150px"><i class="${s >= 2 ? 'swing' : ''}" style="height:55%;background:${['#6C8EAD', '#D2403F', '#4CAF50', '#F5C518'][i]};--amp:${amp[i]};border-top:4px solid var(--ink)"></i></div><b class="cap">${n}</b></div>${i < 3 ? '<span class="mid" style="margin-top:56px">' + (push ? '→' : '←') + '</span>' : ''}`).join('');
-      return `<div class="row" style="gap:20px;align-items:flex-start"><div class="card white" style="padding:10px 14px;width:640px;flex:none"><div class="row" style="gap:10px;margin-bottom:6px"><span class="chip ${push ? 'r' : 'g'} lg">${push ? 'PUSH: forecast-driven' : 'PULL: McDonald’s'}</span><span class="chip">illustrative model</span></div><div class="row" style="gap:12px;align-items:flex-start">${bars}</div>
-        <div class="cap c mt">${push ? 'Information flows upstream, goods flow down' : 'Order starts at the restaurant'}: restaurant → DC → supplier → production</div></div>
-        <div class="col grow" style="gap:10px">
-          ${s === 0 ? '<div class="card gold lg">Press Space: customer demand wobbles.</div>' : ''}
-          ${s >= 2 ? (push ? '<div class="stamp new" style="align-self:flex-start;margin:10px 0 0 10px;font-size:30px">BULLWHIP EFFECT</div><div class="card white cap new">A small wobble at the restaurant grows at every stage upstream.</div>' : '<div class="card white cap new">The order starts at the restaurant. Upstream bars barely move.</div>') : ''}
-          ${s >= 3 ? (push ? '<div class="card gold cap new">Remedies: better information systems, lead-time management, proper inventory policy.</div>' : '<div class="card gold cap new">Made to order. Suppliers hold barely any extra stock, except contingency stock during machinery servicing.</div><div class="card white sm new">Remedies McDonald’s uses: better information systems, lead-time management, proper inventory policy.</div>') : ''}</div></div>
-        ${s >= 4 ? `<div class="row mt new" style="gap:12px">${res('0', 'fill rate', { count: '99.8|900|1||%' })}${res('0', 'days max inventory', { count: '10|900|0' })}${res('0', 'turns', { count: '36|900|0' })}<div class="card white grow sm"><span class="chip">Store → DC: 3 days to 1 week</span> <span class="chip">DC → suppliers: 3 months rolling</span></div></div>` : ''}`;
-    }
-  };
-}
 TABS[6] = {
   modes: [
-    bullwhip(true), bullwhip(false),
     { name: 'Inside the Engine', max: 8, render(c) {
       const s = c.step, F = ['RKFL manages all DCs', 'Owns the transport division', 'Handles all truck movement nationally', '80% of movement is by refrigerated truck', 'Frozen and chilled ordered through RK Cold Chain', 'RKFL is a logistics partner, not part of McDonald’s'];
       const pos = [[0, 10], [410, 10], [0, 150], [410, 150], [0, 290], [410, 290]];
