@@ -57,16 +57,10 @@ function build() {
   $('#strip').insertAdjacentHTML('beforeend', st);
   // opening scene
   $('#open').innerHTML = `
-   <div style="position:absolute;left:60px;top:190px">${SP.cloud(9)}</div><div style="position:absolute;left:1060px;top:130px">${SP.cloud(8)}</div><div style="position:absolute;left:700px;top:300px;opacity:.9">${SP.cloud(6)}</div>
-   <svg style="position:absolute;left:0;top:380px" width="1366" height="210" viewBox="0 0 1366 210"><g fill="#CDE9EC"><rect x="0" y="120" width="1366" height="90"/><rect x="250" y="80" width="140" height="130" rx="10"/><rect x="420" y="100" width="100" height="110" rx="10"/><rect x="900" y="70" width="120" height="140" rx="10"/><rect x="1060" y="96" width="160" height="114" rx="10"/><rect x="560" y="116" width="110" height="94" rx="10"/></g></svg>
    <div class="sign panel"><h1>McDonald\u2019s India<br>Supply Chain</h1><div class="lg" style="margin-top:6px">From farm to customer, in ten stops</div></div>
    <div class="pave"></div><div class="road"></div>
-   <div style="position:absolute;left:-10px;bottom:150px">${palm(470, -6, 1)}</div><div style="position:absolute;left:120px;bottom:150px">${palm(540, 8, 2)}</div>
-   <div style="position:absolute;left:960px;bottom:160px">${palm(300, 4, 3)}</div><div style="position:absolute;left:1060px;bottom:160px">${palm(260, -4, 4)}</div>
-   <div style="position:absolute;left:330px;bottom:150px">${SP.store(7)}</div>
-   <div style="position:absolute;left:1180px;bottom:150px">${lampSvg(380)}</div>
-   <div style="position:absolute;left:290px;bottom:152px">${shrub(120)}</div><div style="position:absolute;left:770px;bottom:152px">${shrub(140, '#4CB86A')}</div><div style="position:absolute;left:1260px;bottom:152px">${shrub(110)}</div>
-   <div style="position:absolute;left:900px;bottom:8px">${SP.truck(4)}</div>
+   <div style="position:absolute;left:400px;bottom:200px">${SP.store(7)}</div>
+   <div style="position:absolute;left:880px;bottom:30px">${SP.truck(4)}</div>
    <div class="go btn" data-a="start">Start</div>`;
   $('#hint').innerHTML = `<div class="row" style="justify-content:space-between"><h3 class="mono">Presenter keys</h3><button class="btn sm" data-a="hint">Hide</button></div>
    <div class="k"><kbd>1-9, 0</kbd><span>Go to tab 1 to 9, tab 10</span><kbd>PgUp / PgDn</kbd><span>Previous / next tab</span>

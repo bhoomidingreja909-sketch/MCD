@@ -3,7 +3,7 @@
    rendered as crisp inline SVG. No images, no icon packs, no fonts.
    ===================================================================== */
 const PAL = {
-  K: '#24404F', W: '#FFFFFF', C: '#E6E1D3', c: '#CFCBC0', R: '#E8392F', r: '#B8261E', G: '#FFC629', g: '#D99A00',
+  K: '#16293B', W: '#FFFFFF', C: '#E6E1D3', c: '#CFCBC0', R: '#D8281E', r: '#A81D15', G: '#FFC20E', g: '#D99A00',
   D: '#3A3A3F', d: '#55555C', S: '#8C8C8C', s: '#6F6F6F', L: '#F2F2F2', A: '#A9B858', a: '#6F8F3A', T: '#4A3A38',
   P: '#4A4A4A', B: '#7FB6EA', Q: '#5CCBB8', O: '#F0A35E', U: '#9B7FD6', N: '#4CAF50', H: '#6C8EAD',
   b: '#C98A3C', y: '#E9C27A', p: '#7A4A2A', k: '#4F2E1C', m: '#F4EFE0', f: '#F0C8A0', o: '#D9A878', w: '#CFE7F7', V: '#7F5A9F'
@@ -38,7 +38,7 @@ function pix(rows, o = {}) {
   }
   return svgWrap(W, H, paths, o);
 }
-const SOFT = '<defs><filter id="sf" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0.42"/><feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"/></filter></defs>';
+const SOFT = '<defs><filter id="sf" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0.3"/><feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"/></filter></defs>';
 function svgWrap(W, H, inner, o = {}) {
   const s = o.s || 4;
   return `<svg class="spr ${o.cls || ''}" viewBox="0 0 ${W} ${H}" width="${W * s}" height="${H * s}" style="${o.style || ''}">${SOFT}<g filter="url(#sf)">${inner}</g></svg>`;
@@ -113,27 +113,24 @@ function pixelDial(cx, cy, r, a0, a1, color, sz) {
 let _vg = 0;
 const lgr = (c1, c2) => { const id = 'vg' + (++_vg); return [id, `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`]; };
 function V(W, H, s, build, o = {}) {
-  const defs = [], g = (c1, c2) => { const [id, d] = lgr(c1, c2); defs.push(d); return `url(#${id})`; };
+  const defs = [], g = (c1, c2) => c1; // flat colours
   const body = build(g);
   return `<svg class="spr ${o.cls || ''}" viewBox="0 0 ${W * 10} ${H * 10}" width="${W * s}" height="${H * s}" style="${o.style || ''}"><defs>${defs.join('')}</defs>${body}</svg>`;
 }
-const CREAM = ['#FFF8E6', '#EBDDBB'], REDG = ['#F5594C', '#C42E25'], GOLDG = ['#FFD85A', '#F2A900'], GLASS = ['#9BDCEB', '#2F86A6'], GREYG = ['#C9D6DF', '#8FA3B2'];
+const CREAM = ['#F7EDD0'], REDG = ['#D8281E'], GOLDG = ['#FFC20E'], GLASS = ['#2B3F55'], GREYG = ['#A9B8C6'];
 const wheel = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#1F2A33"/><circle cx="${x}" cy="${y}" r="${r * 0.46}" fill="#C7D2DA"/><circle cx="${x}" cy="${y}" r="${r * 0.16}" fill="#6B7A86"/>`;
-const bunBadge = (x, y, r, g) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${g(...GOLDG)}" stroke="#D99A00" stroke-width="${r / 8}"/><path d="M${x - r * 0.55} ${y - r * 0.05} Q${x} ${y - r * 0.85} ${x + r * 0.55} ${y - r * 0.05} Z" fill="#C98A3C"/><rect x="${x - r * 0.58}" y="${y}" width="${r * 1.16}" height="${r * 0.2}" rx="${r * 0.1}" fill="#5A3320"/><rect x="${x - r * 0.52}" y="${y + r * 0.26}" width="${r * 1.04}" height="${r * 0.22}" rx="${r * 0.11}" fill="#E0A24A"/>`;
+const bunBadge = (x, y, r, g) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${g(...GOLDG)}"/><path d="M${x - r * 0.55} ${y - r * 0.05} Q${x} ${y - r * 0.85} ${x + r * 0.55} ${y - r * 0.05} Z" fill="#C98A3C"/><rect x="${x - r * 0.58}" y="${y}" width="${r * 1.16}" height="${r * 0.2}" rx="${r * 0.1}" fill="#5A3320"/><rect x="${x - r * 0.52}" y="${y + r * 0.26}" width="${r * 1.04}" height="${r * 0.22}" rx="${r * 0.11}" fill="#E0A24A"/>`;
 
 SP.store = (s = 4, o = {}) => V(72, 44, s, g => `
-  <ellipse cx="330" cy="424" rx="330" ry="14" fill="rgba(20,60,80,.22)"/>
-  <rect x="40" y="96" width="520" height="64" rx="16" fill="${g(...CREAM)}"/><rect x="40" y="138" width="520" height="14" fill="#EBDDBB"/>
-  ${bunBadge(300, 58, 44, g)}
-  <rect x="40" y="150" width="520" height="244" rx="18" fill="${g(...CREAM)}"/>
-  <rect x="16" y="166" width="568" height="70" rx="18" fill="${g(...REDG)}"/><rect x="30" y="172" width="540" height="10" rx="5" fill="#FF8C7E" opacity=".6"/>
-  ${Array.from({ length: 21 }, (_, i) => `<circle cx="${34 + i * 27.5}" cy="236" r="14" fill="#C42E25"/>`).join('')}
-  ${bunBadge(84, 204, 17, g)}${bunBadge(516, 204, 17, g)}
-  <rect x="68" y="262" width="176" height="100" rx="12" fill="${g(...GLASS)}"/><path d="M84 262 L128 262 L92 362 L68 362 Z" fill="#fff" opacity=".22"/>
-  <rect x="266" y="262" width="68" height="132" rx="10" fill="#1E4A5E"/><rect x="274" y="270" width="52" height="116" rx="7" fill="${g('#7FCFE2', '#2A7C9B')}"/><rect x="316" y="320" width="5" height="26" rx="2" fill="#fff"/>
-  <rect x="356" y="262" width="176" height="100" rx="12" fill="${g(...GLASS)}"/><path d="M372 262 L416 262 L380 362 L356 362 Z" fill="#fff" opacity=".22"/>
-  <rect x="40" y="372" width="520" height="24" rx="8" fill="${g(...REDG)}"/>
-  <rect x="610" y="260" width="72" height="150" rx="12" fill="${g(...REDG)}"/><circle cx="646" cy="296" r="20" fill="${g(...GOLDG)}"/><rect x="624" y="336" width="44" height="8" rx="4" fill="#fff"/><rect x="624" y="356" width="44" height="8" rx="4" fill="#fff"/>`, { ...o, raw: 1 });
+  <rect x="30" y="96" width="540" height="70" rx="6" fill="#FFC20E"/><rect x="30" y="112" width="540" height="8" fill="#FFD84D"/><rect x="70" y="62" width="460" height="40" rx="6" fill="#FFC20E"/>
+  <rect x="236" y="14" width="128" height="100" rx="10" fill="#D8281E"/>${bunBadge(300, 62, 40, g)}
+  <rect x="40" y="166" width="520" height="232" fill="#D8281E"/>
+  <rect x="64" y="236" width="472" height="118" fill="#2B3F55"/>${[0, 1, 2, 3, 4, 5, 6].map(i => `<rect x="${64 + i * 78.5}" y="236" width="6" height="118" fill="#D8281E"/>`).join('')}
+  <rect x="84" y="262" width="60" height="30" fill="#4A6683"/><rect x="396" y="262" width="60" height="30" fill="#4A6683"/><rect x="236" y="262" width="26" height="92" fill="#4A6683"/>
+  <rect x="70" y="326" width="70" height="22" fill="#F08A2A"/><rect x="156" y="326" width="40" height="22" fill="#F08A2A"/>
+  ${bunBadge(94, 202, 20, g)}${bunBadge(506, 202, 20, g)}
+  <rect x="540" y="214" width="170" height="16" rx="3" fill="#FFC20E"/><rect x="684" y="214" width="8" height="190" fill="#A81D15"/>
+  <rect x="40" y="380" width="520" height="22" fill="#A81D15"/>`, { ...o, raw: 1 });
 
 SP.farm = (s = 4) => V(30, 16, s, g => `
   <rect x="0" y="116" width="300" height="44" rx="16" fill="${g('#86D07A', '#4FA14A')}"/><path d="M6 134 Q150 118 294 134" stroke="#6CBB62" stroke-width="7" fill="none"/>
@@ -148,7 +145,7 @@ SP.factory = (s = 4) => V(30, 16, s, g => `
   <rect x="228" y="26" width="40" height="110" rx="6" fill="${g('#E8695B', '#B8352B')}"/><rect x="228" y="48" width="40" height="10" fill="#fff"/>
   <circle cx="248" cy="18" r="13" fill="#fff" opacity=".95"/><circle cx="272" cy="8" r="9" fill="#fff" opacity=".8"/><circle cx="232" cy="6" r="8" fill="#fff" opacity=".7"/>`);
 SP.dc = (s = 4) => V(30, 16, s, g => `
-  <ellipse cx="150" cy="150" rx="146" ry="9" fill="rgba(20,60,80,.2)"/>
+  
   <rect x="10" y="52" width="280" height="96" rx="10" fill="${g(...CREAM)}"/><rect x="0" y="34" width="300" height="32" rx="14" fill="${g(...REDG)}"/>${bunBadge(150, 50, 15, g)}
   ${[0, 1, 2, 3].map(i => `<rect x="${28 + i * 66}" y="82" width="52" height="66" rx="5" fill="${g('#BCC8D1', '#8493A0')}"/>${[0, 1, 2].map(k => `<rect x="${32 + i * 66}" y="${92 + k * 16}" width="44" height="4" rx="2" fill="#fff" opacity=".6"/>`).join('')}`).join('')}`);
 SP.stop = (s = 4) => V(30, 16, s, g => `
@@ -165,14 +162,14 @@ SP.home = (s = 4) => V(30, 16, s, g => `
   <rect x="54" y="88" width="34" height="30" rx="5" fill="${g(...GLASS)}"/><rect x="146" y="88" width="34" height="30" rx="5" fill="${g(...GLASS)}"/>
   <circle cx="250" cy="80" r="14" fill="#F5C8A0"/><path d="M236 76 Q250 58 264 76 Z" fill="#7A4A2A"/><rect x="236" y="96" width="28" height="44" rx="13" fill="#4F88B3"/><rect x="240" y="136" width="8" height="14" rx="3" fill="#24404F"/><rect x="252" y="136" width="8" height="14" rx="3" fill="#24404F"/>`);
 SP.truck = (s = 4, o = {}) => V(38, 18, s, g => `
-  <ellipse cx="190" cy="176" rx="180" ry="6" fill="rgba(20,60,80,.22)"/>
+  
   <rect x="0" y="10" width="252" height="118" rx="14" fill="${g('#FFFFFF', '#D5E3EC')}"/><rect x="0" y="70" width="252" height="14" fill="#4AA8E0"/><rect x="0" y="88" width="252" height="8" fill="#E8392F"/>
   <path d="M252 40 H318 Q338 40 348 62 L368 96 Q374 108 374 120 V128 H252 Z" fill="${g(...REDG)}"/>
   <path d="M264 52 H312 Q324 52 332 68 L342 92 H264 Z" fill="${g('#C4EDF8', '#5FB5D4')}"/>
   <rect x="0" y="124" width="374" height="20" rx="7" fill="#39424B"/><circle cx="368" cy="114" r="7" fill="#FFD95A"/>
   ${wheel(64, 150, 26)}${wheel(122, 150, 26)}${wheel(306, 150, 26)}`, { ...o, raw: 1 });
 SP.van = (s = 4, o = {}) => V(30, 16, s, g => `
-  <ellipse cx="150" cy="150" rx="140" ry="6" fill="rgba(20,60,80,.22)"/>
+  
   <rect x="0" y="12" width="196" height="102" rx="14" fill="${g('#FFFFFF', '#D5E3EC')}"/>
   <rect x="12" y="60" width="52" height="12" rx="6" fill="#6EC1F5"/><rect x="72" y="60" width="52" height="12" rx="6" fill="#3FD0B4"/><rect x="132" y="60" width="52" height="12" rx="6" fill="#FFA94D"/>
   <path d="M196 44 H240 Q256 44 264 62 L284 96 Q290 106 290 116 V116 H196 Z" fill="${g(...REDG)}"/><path d="M206 54 H238 Q248 54 254 66 L262 88 H206 Z" fill="${g('#C4EDF8', '#5FB5D4')}"/>
